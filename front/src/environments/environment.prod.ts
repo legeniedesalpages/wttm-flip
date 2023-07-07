@@ -12,5 +12,9 @@
 **/
 export const environment = {
     production: true,
-    title: 'WTTM Flipcard'
+    title: 'WTTM Flipcard',
+    pusher: {
+        key: 'SECRET_PUSHER_KEY',
+        cluster: 'eu'
+      }
 };
