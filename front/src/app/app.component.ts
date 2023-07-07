@@ -11,6 +11,7 @@
     * - Modification    : 
 **/
 import { Component, OnInit } from '@angular/core';
+import { PusherService } from './pusher.service';
 
 @Component({
   selector: 'app-root',
@@ -23,10 +24,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
 
-  constructor() {
+  constructor(private pusherService: PusherService) {
     console.debug("Creating 'WTTM Flipcard'");
   }
   ngOnInit(): void {
-    console.info("Launching 'WTTM Flipcard'");
+    console.info("Launching 'WTTM Flipcard'")
+    this.pusherService.channel.bind('my-event', (data: any) => {
+
+      console.log(data)
+
+    });
   }
 }
