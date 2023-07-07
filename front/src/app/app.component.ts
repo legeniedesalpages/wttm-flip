@@ -11,13 +11,14 @@
     * - Modification    : 
 **/
 import { Component, OnInit } from '@angular/core';
-import { PusherService } from './pusher.service';
+import { PusherService } from './services/pusher.service';
 
 @Component({
   selector: 'app-root',
   template: `
     <div>
       Hello World 2
+      <wttm-card></wttm-card>
     </div>
   `,
   styles: [``]

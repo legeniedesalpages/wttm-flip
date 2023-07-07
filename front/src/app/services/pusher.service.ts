@@ -11,9 +11,8 @@
     * - Modification    : 
 **/
 import { Injectable, OnDestroy } from '@angular/core';
-import { environment } from '../environments/environment';
-import Pusher from 'pusher-js';
-import { Channel } from 'pusher-js';
+import { environment } from '../../environments/environment';
+import Pusher, { Channel } from 'pusher-js';
 
 @Injectable({
   providedIn: 'root'

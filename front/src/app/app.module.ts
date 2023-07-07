@@ -14,7 +14,8 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { PusherService } from './pusher.service';
+import { PusherService } from './services/pusher.service';
+import { CardModule } from './components/card/card.module';
 
 @NgModule({
   declarations: [
@@ -23,14 +24,17 @@ import { PusherService } from './pusher.service';
 
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    CardModule
   ],
 
   providers: [
     PusherService
   ],
 
-  bootstrap: [AppComponent]
+  bootstrap: [
+    AppComponent
+  ]
 })
 export class AppModule {
 }
