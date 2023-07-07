@@ -10,7 +10,7 @@
     * - Author          : renau
     * - Modification    : 
 **/
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -21,9 +21,12 @@ import { Component } from '@angular/core';
   `,
   styles: [``]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   constructor() {
+    console.debug("Creating 'WTTM Flipcard'");
+  }
+  ngOnInit(): void {
     console.info("Launching 'WTTM Flipcard'");
   }
 }
