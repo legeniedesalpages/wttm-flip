@@ -1,0 +1,26 @@
+version: '3.5'
+
+services:
+  wttm-angular-app:
+    image: angular:2.4
+    build:
+      context: ./docker/
+      dockerfile: Dockerfile-Node
+    container_name: wttm-angular-app
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+    ports:
+      - 5011:5000
+      - 5915:49153
+    volumes:
+      - ./front:/usr/src/app
+    networks:
+      backend:
+        aliases:
+          - wttm-angular-app
+  
+networks:
+  backend:
+    name: wttm-network
