@@ -5,3 +5,13 @@ body {
   height: 100%;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+@font-face {
+  font-family: 'NCAA-Army-2015';
+  src:url('./assets/fonts/army.ttf.woff') format('woff'),
+      url('./assets/fonts/army.ttf.svg#NCAA-Army-2015') format('svg'),
+      url('./assets/fonts/army.ttf.eot'),
+      url('./assets/fonts/army.ttf.eot?#iefix') format('embedded-opentype'); 
+  font-weight: normal;
+  font-style: normal;
+}

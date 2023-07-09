@@ -17,8 +17,7 @@ import { PusherService } from './services/pusher.service';
   selector: 'app-root',
   template: `
     <div>
-      Hello World 2
-      <wttm-card></wttm-card>
+      <wttm-board></wttm-board>
     </div>
   `,
   styles: [``]
@@ -30,10 +29,10 @@ export class AppComponent implements OnInit {
   }
   ngOnInit(): void {
     console.info("Launching 'WTTM Flipcard'")
-    this.pusherService.channel.bind('my-event', (data: any) => {
+    /*this.pusherService.channel.bind('my-event', (data: any) => {
 
       console.log(data)
 
-    });
+    });*/
   }
 }

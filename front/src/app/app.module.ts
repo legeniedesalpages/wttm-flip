@@ -15,7 +15,7 @@ import { AppComponent } from './app.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { PusherService } from './services/pusher.service';
-import { CardModule } from './components/card/card.module';
+import { BoardModule } from './components/board/board.module';
 
 @NgModule({
   declarations: [
@@ -25,7 +25,7 @@ import { CardModule } from './components/card/card.module';
   imports: [
     BrowserModule,
     HttpClientModule,
-    CardModule
+    BoardModule
   ],
 
   providers: [

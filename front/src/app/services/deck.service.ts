@@ -10,18 +10,69 @@
     * - Author          : renau
     * - Modification    : 
 **/
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CardLogo, CardModel, CardType } from '../model/card-model';
+import { Observable, Subject, of } from 'rxjs';
 
-@Injectable({
-    providedIn: 'root'
-})
-export class DeckService implements OnInit {
+@Injectable({ providedIn: 'root' })
+export class DeckService {
 
-    private deck: CardModel[] = []
+    private static NUMBER_OF_DECK: number = 3
+    private static NUMBER_OF_SHUFFLE: number = 10
+
+    private cardList: CardModel[] = []
+    private deck: CardModel[][] = []
+    private round: number = 0
+    private subjects: Subject<CardModel>[] = []
 
     constructor() {
-        this.deck.push(
+        this.createCards()
+        console.info("Cards created, number of cards: " + this.cardList.length)
+    }
+
+
+    public firstShuffle() {
+        const clonedCardList = [...this.cardList]
+        for (let i = 0; i < DeckService.NUMBER_OF_SHUFFLE; i++) {
+            clonedCardList.sort(() => Math.random() - 0.5);
+        }
+        for (let i = 0; i < DeckService.NUMBER_OF_DECK; i++) {
+            this.deck[i] = clonedCardList.splice(0, this.cardList.length / DeckService.NUMBER_OF_DECK)
+        }
+        this.round = 0
+        console.debug("Deck: ", this.deck)
+    }
+
+    public getCards(): Observable<CardModel>[] {
+        for(let i=0; i<6; i++) {
+            this.subjects[i] = new Subject()
+        }
+        return this.subjects
+    }
+
+    public incrementRound() {
+        this.round++
+        console.log("Round:" + this.round)
+        if (this.round == this.cardList.length / DeckService.NUMBER_OF_DECK) {
+            this.shuffle()
+            this.round = 0
+        }
+        for(let i=0; i<3; i++) {
+            this.subjects[i].next(this.deck[i][this.round])
+        }
+        for(let i=3; i<6; i++) {
+            this.subjects[i].next(this.deck[i-3][this.round+1])
+        }
+    }
+
+    private shuffle() {
+        for (let i = 0; i < DeckService.NUMBER_OF_DECK; i++) {
+            this.deck[i].sort(() => Math.random() - 0.5);
+        }
+    }
+
+    private createCards() {
+        this.cardList.push(
             { id: 1, cardType: CardType.Robot, cardLogo: CardLogo.Comet, displayNumber: 1 },
             { id: 2, cardType: CardType.Electricty, cardLogo: CardLogo.Comet, displayNumber: 1 },
             { id: 3, cardType: CardType.Robot, cardLogo: CardLogo.Dog, displayNumber: 2 },
@@ -86,9 +137,5 @@ export class DeckService implements OnInit {
             { id: 62, cardType: CardType.Robot, cardLogo: CardLogo.Earth, displayNumber: 15 },
             { id: 63, cardType: CardType.Electricty, cardLogo: CardLogo.Earth, displayNumber: 15 }
         )
-    }
-
-    ngOnInit(): void {
-
     }
 }

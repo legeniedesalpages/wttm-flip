@@ -43,3 +43,8 @@ export enum CardLogo {
     Dog,
     Comet
 }
+
+export enum Side {
+    NumberSide,
+    TypeSide
+}

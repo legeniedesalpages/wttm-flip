@@ -20,18 +20,18 @@ import Pusher, { Channel } from 'pusher-js';
 export class PusherService implements OnDestroy {
 
   private pusher: Pusher;
-  public channel: Channel;
+  //public channel: Channel;
 
   constructor() {
     console.info("Enabling pusher")
     this.pusher = new Pusher(environment.pusher.key, {
       cluster: environment.pusher.cluster
     });
-    this.channel = this.pusher.subscribe('events-channel');
+    //this.channel = this.pusher.subscribe('events-channel');
   }
 
   ngOnDestroy(): void {
     console.info("Destroying pusher")
-    this.channel.disconnect();
+    //this.channel.disconnect();
   }
 }
