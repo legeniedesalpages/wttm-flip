@@ -11,20 +11,19 @@
     * - Modification    : 
 **/
 import { Component, OnInit } from '@angular/core';
-import { PusherService } from './services/pusher.service';
 
 @Component({
   selector: 'app-root',
   template: `
     <div>
-      <wttm-board></wttm-board>
+      gogogo dim
     </div>
   `,
   styles: [``]
 })
 export class AppComponent implements OnInit {
 
-  constructor(private pusherService: PusherService) {
+  constructor() {
     console.debug("Creating 'WTTM Flipcard'");
   }
   ngOnInit(): void {

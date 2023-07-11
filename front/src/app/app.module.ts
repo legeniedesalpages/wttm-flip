@@ -14,8 +14,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
-import { PusherService } from './services/pusher.service';
-import { BoardModule } from './components/board/board.module';
+
 
 @NgModule({
   declarations: [
@@ -24,12 +23,10 @@ import { BoardModule } from './components/board/board.module';
 
   imports: [
     BrowserModule,
-    HttpClientModule,
-    BoardModule
+    HttpClientModule
   ],
 
   providers: [
-    PusherService
   ],
 
   bootstrap: [
