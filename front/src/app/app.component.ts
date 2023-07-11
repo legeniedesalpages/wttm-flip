@@ -11,6 +11,8 @@
     * - Modification    : 
 **/
 import { Component, OnInit } from '@angular/core';
+import { CardsService } from './services/cards.service';
+import { GameService } from './services/game.service';
 
 @Component({
   selector: 'app-root',
@@ -23,12 +25,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
 
-  constructor() {
+
+
+  constructor(private cardsService : CardsService, private gameService : GameService) {
     console.debug("Creating 'WTTM Flipcard'");
+
   }
   ngOnInit(): void {
     console.info("Launching 'WTTM Flipcard'")
-    /*this.pusherService.channel.bind('my-event', (data: any) => {
+    this.gameService.startGame()  /*this.pusherService.channel.bind('my-event', (data: any) => {
 
       console.log(data)
 
