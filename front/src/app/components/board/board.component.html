@@ -1,0 +1,4 @@
+<div class="board"> {{gameService.getCardsForTurn()[0][0].displayNumber}}
+  <div  *ngFor="let cardPair of gameService.getCardsForTurn()">
+    <app-card-recto [card]="cardPair[0]"></app-card-recto></div>
+</div>
