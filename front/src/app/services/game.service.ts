@@ -6,9 +6,11 @@ import { CardsService } from "./cards.service";
 export class GameService {
 
 
-    decks: Card[][] = [];
-    cardList: Card[] = [];
-    shuffledDeck: Card[] = [];
+    decks: Card[][] = []
+    indexTurn: number = 1
+
+    cardBoard: Card[][] = []
+
 
 
     constructor(private cardsService: CardsService) {
@@ -17,37 +19,69 @@ export class GameService {
 
     startGame() {
 
-        this.cardList = this.cardsService.getCardsList()
-        console.debug("original cardlist " , this.cardList);
+        let cardList = this.cardsService.getCardsList()
+        console.debug("original cardlist ", cardList);
 
-        this.shuffle(this.cardList)
+        this.shuffle(cardList)
 
-        //this.splitDeck()
+        this.splitDeck(cardList)
 
-        console.log("celuila",this.decks)
+        this.cardBoard = [
+            [this.decks[0][this.indexTurn - 1], this.decks[0][this.indexTurn]],
+            [this.decks[1][this.indexTurn - 1], this.decks[1][this.indexTurn]],
+            [this.decks[2][this.indexTurn - 1], this.decks[2][this.indexTurn]]
+        ]
+
+        console.log("celuila", this.decks)
 
     }
 
     nextTurn() {
+        this.indexTurn++
+        if (this.indexTurn == 21) {
+            this.indexTurn = 1
+            for (let i = 0; i < 2; i++) {
+                this.shuffle(this.decks[i])
+            }
+        }
+        console.log(this.indexTurn)
+
+        this.cardBoard = [
+            [this.decks[0][this.indexTurn - 1], this.decks[0][this.indexTurn]],
+            [this.decks[1][this.indexTurn - 1], this.decks[1][this.indexTurn]],
+            [this.decks[2][this.indexTurn - 1], this.decks[2][this.indexTurn]]
+        ]
 
     }
 
     private shuffle(cards: Card[]) {
 
-        
+
         for (let i = 0; i < 10; i++) {
             cards.sort(() => Math.random() - 0.5);
         }
 
-        console.log("after" , cards);
+        console.log("after", cards);
     }
 
-    private splitDeck() {
-        this.decks[0] = this.shuffledDeck.slice(0,20)
-        this.decks[1] = this.shuffledDeck.slice(21, 41)
-        this.decks[2] = this.shuffledDeck.slice(42, 62)
+    private splitDeck(cards: Card[]) {
+        this.decks[0] = cards.slice(0, 21)
+        this.decks[1] = cards.slice(21, 42)
+        this.decks[2] = cards.slice(42, 63)
     }
 
+    public getIndexTurn(): Number {
+        return this.indexTurn
+    }
 
+    getCardsForTurn(): Card[][] {
+
+
+
+ 
+
+        return this.cardBoard
+
+    }
 
 }

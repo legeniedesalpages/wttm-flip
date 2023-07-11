@@ -16,6 +16,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { CardsService } from './services/cards.service';
 import { GameService } from './services/game.service';
+import { BannerComponent } from './components/banner/banner.component';
+import { BoardComponent } from './components/board/board.component';
 
 
 @NgModule({
@@ -25,7 +27,9 @@ import { GameService } from './services/game.service';
 
   imports: [
     BrowserModule,
-    HttpClientModule
+    HttpClientModule,
+    BannerComponent,
+    BoardComponent
   ],
 
   providers: [

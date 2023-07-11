@@ -17,26 +17,39 @@ import { GameService } from './services/game.service';
 @Component({
   selector: 'app-root',
   template: `
-    <div>
-      gogogo dim
-    </div>
+
+      <app-banner></app-banner>
+      <app-board></app-board>
+      {{gameService.getCardsForTurn()[0][1].displayNumber}}
+
+  
+    
   `,
   styles: [``]
+
 })
 export class AppComponent implements OnInit {
 
 
 
-  constructor(private cardsService : CardsService, private gameService : GameService) {
+  constructor(private cardsService: CardsService, public gameService: GameService) {
     console.debug("Creating 'WTTM Flipcard'");
 
   }
   ngOnInit(): void {
     console.info("Launching 'WTTM Flipcard'")
-    this.gameService.startGame()  /*this.pusherService.channel.bind('my-event', (data: any) => {
+    this.gameService.startGame() 
+     /*this.pusherService.channel.bind('my-event', (data: any) => {
 
       console.log(data)
 
     });*/
   }
+
+
+
+
+
+
+
 }
