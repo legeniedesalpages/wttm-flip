@@ -26,11 +26,7 @@ export class GameService {
 
         this.splitDeck(cardList)
 
-        this.cardBoard = [
-            [this.decks[0][this.indexTurn - 1], this.decks[0][this.indexTurn]],
-            [this.decks[1][this.indexTurn - 1], this.decks[1][this.indexTurn]],
-            [this.decks[2][this.indexTurn - 1], this.decks[2][this.indexTurn]]
-        ]
+
 
         console.log("celuila", this.decks)
 
@@ -46,11 +42,7 @@ export class GameService {
         }
         console.log(this.indexTurn)
 
-        this.cardBoard = [
-            [this.decks[0][this.indexTurn - 1], this.decks[0][this.indexTurn]],
-            [this.decks[1][this.indexTurn - 1], this.decks[1][this.indexTurn]],
-            [this.decks[2][this.indexTurn - 1], this.decks[2][this.indexTurn]]
-        ]
+
 
     }
 
@@ -77,7 +69,11 @@ export class GameService {
     getCardsForTurn(): Card[][] {
 
 
-
+        this.cardBoard = [
+            [this.decks[0][this.indexTurn - 1], this.decks[0][this.indexTurn]],
+            [this.decks[1][this.indexTurn - 1], this.decks[1][this.indexTurn]],
+            [this.decks[2][this.indexTurn - 1], this.decks[2][this.indexTurn]]
+        ]
  
 
         return this.cardBoard

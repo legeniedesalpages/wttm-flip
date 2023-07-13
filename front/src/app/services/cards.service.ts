@@ -82,12 +82,9 @@ console.log("toto",this.cardsList)
     }
 
     getCardsList() {
-        console.log("toto 1",this.cardsList)
-        let a =  this.cardsList.slice()
-        console.log("toto 2",a)
-        new Promise((r) => setTimeout(r,500)).then(()=> {}).catch() 
-        return a
-
+        let cardListCopy =  this.cardsList.slice()
+        console.log("liste des cartes" + cardListCopy)
+        return cardListCopy
     }
 
     

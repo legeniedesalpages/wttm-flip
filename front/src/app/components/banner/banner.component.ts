@@ -6,7 +6,6 @@ import { GameService } from 'src/app/services/game.service';
   selector: 'app-banner',
   standalone: true,
   imports: [CommonModule],
-  providers: [GameService],
   templateUrl: './banner.component.html',
   styleUrls: ['./banner.component.css']
 })
