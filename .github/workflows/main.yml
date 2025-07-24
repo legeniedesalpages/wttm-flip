@@ -35,7 +35,7 @@ jobs:
       working-directory: ./front
       
     - name: Build Front
-      run: npm run build --configuration production --base-href /wttm/ --deploy-url /wttm/
+      run: npm run build -- --configuration production --base-href /wttm/ --deploy-url /wttm/
       working-directory: ./front
       
     - name: Déploiement Front
