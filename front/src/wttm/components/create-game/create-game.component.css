@@ -1,0 +1,20 @@
+.input-container {
+    width: 100%;
+    max-width: 21em;
+    margin: 0 auto;
+}
+
+.name-field {
+    width: 100%;
+}
+
+.create-game-button {
+    width: 100%;
+}
+
+.separator {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(74, 85, 104, 0.3), transparent);
+    margin: 20px 0;
+    border-radius: 0.5px;
+}

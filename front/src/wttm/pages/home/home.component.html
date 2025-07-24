@@ -1,0 +1,24 @@
+<wttm-layout [showHeader]="true" [showFooter]="true">
+    <div slot="header" class="home-header">
+        <img ngSrc="/assets/images/banner.png" 
+             alt="Welcome to the Moon - Banner" 
+             class="banner-image" 
+             width="761" 
+             height="200" 
+             priority />
+             
+    </div>
+
+    <div class="home-content">
+        <div class="start-game">
+            <wttm-create-game (gameCreated)="onGameCreated($event)"></wttm-create-game>
+            <wttm-game-list [games]="gamesList()" (gameJoined)="onGameJoined($event)"></wttm-game-list>
+        </div>
+    </div>
+
+    <div slot="footer" class="home-footer">
+        <span class="copyright">
+            © {{ currentYear }} LGDA - Tous droits réservés
+        </span>
+    </div>
+</wttm-layout>

@@ -1,7 +1,17 @@
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+/**
+    * @description      : 
+    * @author           : renau
+    * @group            : 
+    * @created          : 23/07/2025 - 12:08:03
+    * 
+    * MODIFICATION LOG
+    * - Version         : 1.0.0
+    * - Date            : 23/07/2025
+    * - Author          : renau
+    * - Modification    : 
+**/
+import { bootstrapApplication } from '@angular/platform-browser'
+import { appConfig } from './wttm/wttm.config'
+import { Wttm } from './wttm/wttm'
 
-import { AppModule } from './app/app.module';
-
-
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+bootstrapApplication(Wttm, appConfig).catch((err) => console.error(err))

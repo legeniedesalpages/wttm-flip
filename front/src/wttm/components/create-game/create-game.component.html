@@ -1,0 +1,15 @@
+<div class="input-container">
+    <mat-form-field appearance="outline" class="name-field">
+        <mat-label>Entrez votre nom pour créer une partie...</mat-label>
+        <input matInput placeholder="" [value]="playerName()"
+            (input)="onNameChange($any($event.target).value)" />
+    </mat-form-field>
+
+    <button matButton="filled" class="create-game-button" 
+            (click)="createGame()" 
+            [disabled]="!playerName().trim()">
+        Créer la partie
+    </button>
+
+    <div class="separator"></div>
+</div>

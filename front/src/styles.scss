@@ -1,17 +1,27 @@
-html,
-body {
-  margin: 0;
-  padding: 0;
+@use '@angular/material' as mat;
+@use 'theme-colors.scss' as my-theme; // location of generated file
+
+html {
+  width: 100%;
   height: 100%;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  padding: 0;
+  margin: 0;
+  
+
+  @include mat.theme((
+    color: (
+      primary: my-theme.$primary-palette,
+      tertiary: my-theme.$tertiary-palette,
+    ),
+    typography: 'Roboto, sans-serif',
+    density: 0,
+  ));
 }
 
-@font-face {
-  font-family: 'NCAA-Army-2015';
-  src:url('./assets/fonts/army.ttf.woff') format('woff'),
-      url('./assets/fonts/army.ttf.svg#NCAA-Army-2015') format('svg'),
-      url('./assets/fonts/army.ttf.eot'),
-      url('./assets/fonts/army.ttf.eot?#iefix') format('embedded-opentype'); 
-  font-weight: normal;
-  font-style: normal;
+body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
 }
+

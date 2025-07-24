@@ -1,4 +1,4 @@
-FROM node:18.12.1
+FROM node:22.17.1
 
 WORKDIR /usr/src/app
 
@@ -6,4 +6,4 @@ RUN npm install -g @angular/cli
 
 EXPOSE 5000 49153
 
-CMD npm install;ng serve --hmr --poll 500 --port 5000 --host 0.0.0.0 --disable-host-check
+CMD npm install;ng serve --hmr --poll 500 --port 5000 --host 0.0.0.0
