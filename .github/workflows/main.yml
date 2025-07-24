@@ -42,7 +42,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
         server: ${{ secrets.OVH_SERVER }}
-        local-dir: ./front/dist/app/
+        local-dir: ./front/dist/wttm-flip/browser
         server-dir: /www/wttm/
         dangerous-clean-slate: true
         username: ${{ secrets.OVH_USERNAME }}
