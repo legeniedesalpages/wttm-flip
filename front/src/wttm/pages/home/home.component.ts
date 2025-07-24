@@ -19,6 +19,7 @@ import { NgOptimizedImage } from '@angular/common'
 import { LayoutComponent } from '../../layout/layout.component'
 import { CreateGameComponent } from '../../components/create-game/create-game.component'
 import { GameListComponent } from '../../components/game-list/game-list.component'
+import { environment } from '../../../environments/environment'
 
 interface Game {
   id: string
@@ -36,6 +37,8 @@ interface Game {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
+  protected readonly env = environment
+
   protected readonly currentYear = new Date().getFullYear()
   
   protected readonly gamesList = signal<Game[]>([

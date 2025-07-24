@@ -1,6 +1,6 @@
 <wttm-layout [showHeader]="true" [showFooter]="true">
     <div slot="header" class="home-header">
-        <img ngSrc="/assets/images/banner.png" 
+        <img [ngSrc]="env.assetsPrefix + '/assets/images/banner.png'" 
              alt="Welcome to the Moon - Banner" 
              class="banner-image" 
              width="761" 
