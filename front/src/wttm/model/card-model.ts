@@ -19,7 +19,7 @@ export interface CardModel {
 
 export enum CardType {
     Robot,
-    Electricty,
+    Electricity,
     Leaf,
     Water,
     Spaceman,

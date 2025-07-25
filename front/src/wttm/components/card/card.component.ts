@@ -21,6 +21,7 @@ import { CardModel, CardType } from '../../model/card-model';
 })
 export class CardComponent implements OnInit {
 
+  // TODO : passer a signal
   @Input() $card!: Observable<CardModel>
   @Input() side: boolean = true
 
@@ -31,20 +32,20 @@ export class CardComponent implements OnInit {
 
   ngOnInit(): void {
     this.$card.subscribe(card => {
-      console.info(card)
+      console.debug(card)
       if (card)  {
         this.imageUrl = `'${this.imageResourceFromCardType(card.cardType, this.side)}'`;
       }
     })
   }
 
-  imageResourceFromCardType(cardType: CardType, side: boolean): String {
+  imageResourceFromCardType(cardType: CardType, side: boolean): string {
     let image: string
     switch (cardType) {
       case CardType.Robot:
         image = "robot"
         break
-      case CardType.Electricty:
+      case CardType.Electricity:
         image = "electricity"
         break
       case CardType.Leaf:
