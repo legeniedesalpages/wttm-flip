@@ -37,6 +37,7 @@ interface Game {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent {
+  
   protected readonly env = environment
 
   protected readonly currentYear = new Date().getFullYear()
