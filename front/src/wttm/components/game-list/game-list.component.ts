@@ -16,14 +16,7 @@
  */
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
-
-interface Game {
-  id: string
-  creator: string
-  playersCount: number
-  maxPlayers: number
-  status: 'waiting' | 'playing'
-}
+import { Game } from '../../model/game-model'
 
 @Component({
   selector: 'wttm-game-list',

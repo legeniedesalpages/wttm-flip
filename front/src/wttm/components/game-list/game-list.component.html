@@ -2,21 +2,14 @@
     @for (game of games(); track game.id) {
         <div class="game-item">
             <div class="game-info">
-                <div class="game-creator">{{ game.creator }}</div>
-                <div class="game-players">{{ game.playersCount }}/{{ game.maxPlayers }} joueurs</div>
+                <div class="game-creator">{{ game.name }}</div>
             </div>
-            
-            <button mat-stroked-button class="join-button" 
-                    [disabled]="game.status === 'playing' || game.playersCount >= game.maxPlayers"
-                    (click)="joinGame(game.id)">
-                @if (game.status === 'playing') {
-                    En cours
-                } @else if (game.playersCount >= game.maxPlayers) {
-                    Complète
-                } @else {
-                    Rejoindre
-                }
+
+            <button mat-stroked-button class="join-button" (click)="joinGame(game.id)">
+                Rejoindre
             </button>
         </div>
+    } @empty {
+        <div class="game-item">Aucune partie en cours</div>
     }
 </div>

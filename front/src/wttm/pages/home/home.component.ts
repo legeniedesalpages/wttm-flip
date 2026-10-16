@@ -14,20 +14,13 @@
  * Home page component for WTTM Flip Cards application
  * Displays welcome message with header banner and footer copyright and version
  */
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core'
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
 import { NgOptimizedImage } from '@angular/common'
 import { LayoutComponent } from '../../layout/layout.component'
 import { CreateGameComponent } from '../../components/create-game/create-game.component'
 import { GameListComponent } from '../../components/game-list/game-list.component'
+import { GameService } from '../../services/game.service'
 import { environment } from '../../../environments/environment'
-
-interface Game {
-  id: string
-  creator: string
-  playersCount: number
-  maxPlayers: number
-  status: 'waiting' | 'playing'
-}
 
 @Component({
   selector: 'wttm-home',
@@ -39,27 +32,21 @@ interface Game {
 export class HomeComponent {
   
   protected readonly env = environment
+  private readonly gameService = inject(GameService)
 
   constructor() {
-    console.debug('env', this.env)
+    console.debug('Démarrage application, firebase projectId:', this.env.firebase.projectId)
   }
 
-  protected readonly gamesList = signal<Game[]>([
-    { id: '1', creator: 'Alice', playersCount: 2, maxPlayers: 4, status: 'waiting' },
-    { id: '2', creator: 'Bob', playersCount: 4, maxPlayers: 4, status: 'playing' },
-    { id: '3', creator: 'Charlie', playersCount: 1, maxPlayers: 6, status: 'waiting' },
-    { id: '4', creator: 'Diana', playersCount: 3, maxPlayers: 4, status: 'waiting' },
-    { id: '5', creator: 'Eve', playersCount: 2, maxPlayers: 2, status: 'playing' },
-    { id: '6', creator: 'Frank', playersCount: 1, maxPlayers: 3, status: 'waiting' },
-    { id: '7', creator: 'Grace', playersCount: 5, maxPlayers: 6, status: 'playing' },
-    { id: '8', creator: 'Henry', playersCount: 2, maxPlayers: 4, status: 'waiting' },
-    { id: '9', creator: 'Ivy', playersCount: 3, maxPlayers: 3, status: 'playing' },
-    { id: '10', creator: 'Jack', playersCount: 1, maxPlayers: 5, status: 'waiting' }
-  ])
+  protected readonly gamesList = this.gameService.games
   
-  protected onGameCreated(playerName: string): void {
-    console.debug('Partie créée par:', playerName)
-    // TODO: Implémenter la logique de création de partie
+  protected async onGameCreated(name: string): Promise<void> {
+    try {
+      const gameId = await this.gameService.createGame(name)
+      console.debug('Partie enregistrée:', gameId, name)
+    } catch (error) {
+      console.error('Impossible d\'enregistrer la partie', error)
+    }
   }
 
   protected onGameJoined(gameId: string): void {
