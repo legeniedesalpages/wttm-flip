@@ -10,36 +10,23 @@
     * - Author          : renau
     * - Modification    : 
 **/
-import { Component, OnInit, Input } from '@angular/core';
-import { Observable } from 'rxjs';
-import { CardModel, CardType } from '../../model/card-model';
+import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core'
+import { CardModel, CardType } from '../../model/card-model'
 
 @Component({
   selector: 'wttm-card',
   templateUrl: './card.component.html',
-  styleUrls: ['./card.component.css']
+  styleUrl: './card.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CardComponent implements OnInit {
+export class CardComponent {
 
-  // TODO : passer a signal
-  @Input() $card!: Observable<CardModel>
-  @Input() side: boolean = true
+  readonly card = input.required<CardModel>()
+  readonly side = input(true)
 
-  imageUrl: string | null = null;
+  protected readonly imageUrl = computed(() => `url('${this.imageResourceFromCardType(this.card().cardType, this.side())}')`)
 
-  constructor() {
-  }
-
-  ngOnInit(): void {
-    this.$card.subscribe(card => {
-      console.debug(card)
-      if (card)  {
-        this.imageUrl = `'${this.imageResourceFromCardType(card.cardType, this.side)}'`;
-      }
-    })
-  }
-
-  imageResourceFromCardType(cardType: CardType, side: boolean): string {
+  private imageResourceFromCardType(cardType: CardType, side: boolean): string {
     let image: string
     switch (cardType) {
       case CardType.Robot:

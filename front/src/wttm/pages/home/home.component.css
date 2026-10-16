@@ -1,9 +1,46 @@
 
-.banner-image {
+.home-header {
+  background-color: #2a1e28;
+  overflow: hidden;
+}
+
+.banner {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.banner-side {
+  position: absolute;
+  top: 0;
   width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.banner-side img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1);
+}
+
+.banner-side-left {
+  right: 100%;
+  mask-image: linear-gradient(to left, #000 0%, transparent 10%);
+}
+
+.banner-side-right {
+  left: 100%;
+  mask-image: linear-gradient(to right, #000 0%, transparent 10%);
+}
+
+.banner-image {
+  width: auto;
+  max-width: 100%;
   height: auto;
-  max-height: 200px;
-  object-fit: cover;
+  margin: 0 auto;
   display: block;
   border-bottom: 2px solid #4a5568;
 }

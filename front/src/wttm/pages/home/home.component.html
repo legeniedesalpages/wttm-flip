@@ -1,11 +1,19 @@
 <wttm-layout [showHeader]="true" [showFooter]="true">
     <div slot="header" class="home-header">
-        <img [ngSrc]="`${env.assetsPrefix}` + '/assets/images/banner.png'" 
-             alt="Welcome to the Moon - Banner" 
-             class="banner-image" 
-             width="761" 
-             height="200" 
-             priority />
+        <div class="banner">
+            <div class="banner-side banner-side-left" aria-hidden="true">
+                <img [ngSrc]="`${env.assetsPrefix}` + '/assets/images/banner.png'" alt="" width="761" height="200" />
+            </div>
+            <img [ngSrc]="`${env.assetsPrefix}` + '/assets/images/banner.png'"
+                 alt="Welcome to the Moon - Banner"
+                 class="banner-image"
+                 width="761"
+                 height="200"
+                 priority />
+            <div class="banner-side banner-side-right" aria-hidden="true">
+                <img [ngSrc]="`${env.assetsPrefix}` + '/assets/images/banner.png'" alt="" width="761" height="200" />
+            </div>
+        </div>
              
     </div>
 

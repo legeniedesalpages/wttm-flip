@@ -38,7 +38,7 @@ export class GameListComponent {
   readonly gameJoined = output<string>()
   
   protected joinGame(gameId: string): void {
-    console.log('Rejoindre la partie:', gameId)
+    console.debug('Rejoindre la partie:', gameId)
     this.gameJoined.emit(gameId)
     // TODO: Implémenter la logique de rejoindre une partie
   }

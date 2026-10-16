@@ -56,12 +56,12 @@ export class HomeComponent {
   ])
   
   protected onGameCreated(playerName: string): void {
-    console.log('Partie créée par:', playerName)
+    console.debug('Partie créée par:', playerName)
     // TODO: Implémenter la logique de création de partie
   }
 
   protected onGameJoined(gameId: string): void {
-    console.log('Rejoindre la partie:', gameId)
+    console.debug('Rejoindre la partie:', gameId)
     // TODO: Implémenter la logique de rejoindre une partie
   }
 }
