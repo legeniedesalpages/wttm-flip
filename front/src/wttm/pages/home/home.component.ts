@@ -40,7 +40,6 @@ export class HomeComponent {
   
   protected readonly env = environment
 
-  protected readonly currentYear = new Date().getFullYear()
   
   protected readonly gamesList = signal<Game[]>([
     { id: '1', creator: 'Alice', playersCount: 2, maxPlayers: 4, status: 'waiting' },

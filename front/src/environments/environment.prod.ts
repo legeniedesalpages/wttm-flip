@@ -13,6 +13,7 @@
 export const environment = {
     production: true,
     assetsPrefix: '/wttm',
+    version: 'BUILD_VERSION',
     title: 'WTTM Flipcard',
     pusher: {
         key: 'SECRET_PUSHER_KEY',
