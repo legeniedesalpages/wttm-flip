@@ -24,6 +24,13 @@ jobs:
       run: |-
         sed -i "s/BUILD_VERSION/$(date -u +'%Y.%m.%d-%H%M') (build ${{ github.run_number }})/g" "./front/src/environments/environment.prod.ts"
         sed -i "s/SECRET_PUSHER_KEY/${{secrets.SECRET_PUSHER_KEY}}/g" "./front/src/environments/environment.prod.ts"
+        sed -i "s/FIREBASE_API_KEY/${{secrets.FIREBASE_API_KEY}}/g" "./front/src/environments/environment.prod.ts"
+        sed -i "s/FIREBASE_AUTH_DOMAIN/${{secrets.FIREBASE_AUTH_DOMAIN}}/g" "./front/src/environments/environment.prod.ts"
+        sed -i "s/FIREBASE_BDD_URL/${{secrets.FIREBASE_BDD_URL}}/g" "./front/src/environments/environment.prod.ts"
+        sed -i "s/FIREBASE_APP_ID/${{secrets.FIREBASE_APP_ID}}/g" "./front/src/environments/environment.prod.ts"
+        sed -i "s/FIREBASE_STORAGE_BUCKET/${{secrets.FIREBASE_STORAGE_BUCKET}}/g" "./front/src/environments/environment.prod.ts"
+        sed -i "s/FIREBASE_MESSAGING_SENDER_ID/${{secrets.FIREBASE_MESSAGING_SENDER_ID}}/g" "./front/src/environments/environment.prod.ts"
+        sed -i "s/FIREBASE_MEASUREMENT_ID/${{secrets.FIREBASE_MEASUREMENT_ID}}/g" "./front/src/environments/environment.prod.ts"
     
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4

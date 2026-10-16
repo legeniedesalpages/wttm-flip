@@ -15,6 +15,16 @@ export const environment = {
     assetsPrefix: '/wttm',
     version: 'BUILD_VERSION',
     title: 'WTTM Flipcard',
+    firebase: {
+        apiKey: 'FIREBASE_API_KEY',
+        authDomain: 'FIREBASE_AUTH_DOMAIN',
+        databaseURL: 'FIREBASE_BDD_URL',
+        projectId: 'wttm-flip',
+        appId: 'FIREBASE_APP_ID',
+        storageBucket: 'FIREBASE_STORAGE_BUCKET',
+        messagingSenderId: 'FIREBASE_MESSAGING_SENDER_ID',
+        measurementId: 'FIREBASE_MEASUREMENT_ID'
+    },
     pusher: {
         key: 'SECRET_PUSHER_KEY',
         cluster: 'eu'

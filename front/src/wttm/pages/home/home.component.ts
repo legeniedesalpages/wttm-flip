@@ -12,7 +12,7 @@
 **/
 /**
  * Home page component for WTTM Flip Cards application
- * Displays welcome message with header banner and footer copyright
+ * Displays welcome message with header banner and footer copyright and version
  */
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core'
 import { NgOptimizedImage } from '@angular/common'
@@ -40,7 +40,10 @@ export class HomeComponent {
   
   protected readonly env = environment
 
-  
+  constructor() {
+    console.debug('env', this.env)
+  }
+
   protected readonly gamesList = signal<Game[]>([
     { id: '1', creator: 'Alice', playersCount: 2, maxPlayers: 4, status: 'waiting' },
     { id: '2', creator: 'Bob', playersCount: 4, maxPlayers: 4, status: 'playing' },
