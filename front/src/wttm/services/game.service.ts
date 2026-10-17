@@ -1,6 +1,6 @@
 import { inject, resource, Service, signal, type ResourceStreamItem } from '@angular/core'
 import { get, onValue, push, ref, runTransaction, serverTimestamp, set, update } from 'firebase/database'
-import { Game, GameMode, GameStatus, GameSummary, NewGame, PlayerRanking } from '../model/game-model'
+import { Game, GameMode, GameStatus, GameSummary, NewGame, PlayerRanking, RoundPoint } from '../model/game-model'
 import { FirebaseService } from './firebase.service'
 
 export interface GameRecord {
@@ -21,6 +21,7 @@ export interface StatsRecord {
   flips?: number
   shuffles?: number
   times?: Record<string, { ms?: number, count?: number }>
+  rounds?: Record<string, { at?: number, times?: Record<string, number> }>
 }
 
 export function toGame(id: string, record: GameRecord): Game {
@@ -147,12 +148,18 @@ export class GameService {
       })
       // du plus lent au plus rapide, les joueurs sans temps à la fin
       ranking.sort((a, b) => (b.averageMs ?? -1) - (a.averageMs ?? -1))
+      const startedAt = record?.startedAt ?? 0
+      const rounds: RoundPoint[] = Object.values(record?.rounds ?? {})
+        .filter(round => round.at && round.times)
+        .map(round => ({ atMs: Math.max(0, (round.at ?? 0) - startedAt), times: round.times ?? {} }))
+        .sort((a, b) => a.atMs - b.atMs)
       return {
         name: (game.val() as GameRecord).name ?? '',
         durationMs: record?.startedAt && record.endedAt ? record.endedAt - record.startedAt : null,
         flips: record?.flips ?? 0,
         shuffles: record?.shuffles ?? 0,
-        ranking
+        ranking,
+        rounds
       }
     } catch {
       return null

@@ -35,10 +35,18 @@ export interface PlayerRanking {
   averageMs: number | null
 }
 
+export interface RoundPoint {
+  /** Début du tour en ms depuis le début de la partie */
+  atMs: number
+  /** Temps de chaque joueur (uid -> ms) */
+  times: Record<string, number>
+}
+
 export interface GameSummary {
   name: string
   durationMs: number | null
   flips: number
   shuffles: number
   ranking: PlayerRanking[]
+  rounds: RoundPoint[]
 }

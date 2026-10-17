@@ -162,10 +162,13 @@ export class OnlineGameService {
         updates[`stats/${this.gameId}/roundStartedAt`] = serverTimestamp()
         // temps de chaque joueur entre l'affichage des cartes et son clic (le tour suivant un mélange n'est pas chronométré)
         if (roundStartedAt) {
+          const round = `stats/${this.gameId}/rounds/${this.stats()?.flips ?? 0}`
+          updates[`${round}/at`] = roundStartedAt
           for (const player of players) {
             if (player.readyAt) {
               updates[`stats/${this.gameId}/times/${player.uid}/ms`] = increment(Math.max(0, player.readyAt - roundStartedAt))
               updates[`stats/${this.gameId}/times/${player.uid}/count`] = increment(1)
+              updates[`${round}/times/${player.uid}`] = Math.max(0, player.readyAt - roundStartedAt)
             }
           }
         }
