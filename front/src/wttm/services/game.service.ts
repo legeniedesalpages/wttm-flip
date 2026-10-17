@@ -38,6 +38,12 @@ export function toGame(id: string, record: GameRecord): Game {
   }
 }
 
+export function isSameName(a: string, b: string): boolean {
+  return a.trim().toLowerCase() === b.trim().toLowerCase()
+}
+
+export class NameTakenError extends Error {}
+
 export class JoinError extends Error {
   constructor(readonly reason: 'wrong-password' | 'full-or-started') {
     super(reason)
@@ -77,6 +83,14 @@ export class GameService {
     const uid = await this.firebase.signIn()
     const distributed = options.mode === 'distributed'
     const password = options.password
+
+    const snapshot = await get(this.gamesRef)
+    snapshot.forEach(child => {
+      const existing = toGame(child.key, child.val() as GameRecord)
+      if (existing.status !== 'finished' && isSameName(existing.name, options.name)) {
+        throw new NameTakenError()
+      }
+    })
 
     const gameRef = push(this.gamesRef)
     const id = gameRef.key

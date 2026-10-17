@@ -1,6 +1,5 @@
 :host {
     display: block;
-    background-color: #000;
 }
 .table {
     --gap: 2vmin;

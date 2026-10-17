@@ -1,6 +1,8 @@
 :host {
     display: block;
     min-height: 100dvh;
+    background: var(--night-sky);
+    background-size: var(--night-sky-size);
     background-color: #000;
 }
 

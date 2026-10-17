@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatButtonModule } from '@angular/material/button'
 import { PageShellComponent } from '../../components/page-shell/page-shell.component'
-import { GameService } from '../../services/game.service'
+import { GameService, NameTakenError } from '../../services/game.service'
 
 @Component({
   selector: 'wttm-new-game',
@@ -100,8 +100,13 @@ export class NewGameComponent {
         await this.router.navigate(['/game', gameId])
       }
     } catch (error) {
-      console.error('Impossible d\'enregistrer la partie', error)
-      this.error.set('Impossible de créer la partie.')
+      if (error instanceof NameTakenError) {
+        this.error.set('Une partie en cours ou en préparation porte déjà ce nom.')
+        this.step.set('mode')
+      } else {
+        console.error('Impossible d\'enregistrer la partie', error)
+        this.error.set('Impossible de créer la partie.')
+      }
     } finally {
       this.creating.set(false)
     }

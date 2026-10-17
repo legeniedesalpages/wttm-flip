@@ -1,6 +1,6 @@
 import { Service, signal } from '@angular/core'
 import { initializeApp } from 'firebase/app'
-import { getAuth, signInAnonymously } from 'firebase/auth'
+import { browserSessionPersistence, initializeAuth, signInAnonymously } from 'firebase/auth'
 import { getDatabase } from 'firebase/database'
 import { environment } from '../../environments/environment'
 
@@ -8,7 +8,8 @@ import { environment } from '../../environments/environment'
 export class FirebaseService {
 
   readonly database = getDatabase(initializeApp(environment.firebase))
-  private readonly auth = getAuth(this.database.app)
+  // identité propre à chaque onglet : les fenêtres privées d'un même navigateur partagent sinon le même joueur
+  private readonly auth = initializeAuth(this.database.app, { persistence: browserSessionPersistence })
 
   readonly uid = signal<string | null>(null)
 

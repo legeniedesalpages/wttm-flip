@@ -19,3 +19,9 @@
     border-radius: 0.5px;
 }
 
+
+.name-taken {
+    margin: 0;
+    color: #b3261e;
+    text-align: center;
+}

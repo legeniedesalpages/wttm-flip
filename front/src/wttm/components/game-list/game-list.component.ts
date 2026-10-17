@@ -17,14 +17,14 @@ import { Game } from '../../model/game-model'
             <div class="game-creator">{{ game.name }}</div>
             @if (game.mode === 'distributed') {
               <div class="game-details">
-                Distribuée · {{ game.playerCount }}/{{ game.maxPlayers }} joueurs
+                <span class="player-count">{{ game.playerCount }}/{{ game.maxPlayers }} joueurs</span>
                 @if (game.hasPassword) { · 🔒 }
                 @if (game.status === 'playing') { · en cours }
               </div>
             }
           </div>
 
-          <button matButton="outlined" class="join-button" (click)="gameJoined.emit(game.id)">
+          <button matButton="outlined" class="join-button" [disabled]="!canJoin(game)" (click)="gameJoined.emit(game.id)">
             Rejoindre
           </button>
         </li>
@@ -39,4 +39,8 @@ export class GameListComponent {
   readonly games = input.required<Game[]>()
 
   readonly gameJoined = output<string>()
+
+  protected canJoin(game: Game): boolean {
+    return game.mode === 'distributed' && game.status === 'waiting' && game.playerCount < game.maxPlayers
+  }
 }

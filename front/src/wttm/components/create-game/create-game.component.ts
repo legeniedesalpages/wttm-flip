@@ -2,11 +2,12 @@
  * Create Game component for WTTM Flip Cards application
  * Handles game name input; the game details are asked on the next page
  */
-import { Component, output, signal } from '@angular/core'
+import { Component, computed, input, output, signal } from '@angular/core'
 import { form, FormField, required, maxLength } from '@angular/forms/signals'
 import { MatInputModule } from '@angular/material/input'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatButtonModule } from '@angular/material/button'
+import { isSameName } from '../../services/game.service'
 
 @Component({
   selector: 'wttm-create-game',
@@ -19,9 +20,13 @@ import { MatButtonModule } from '@angular/material/button'
       </mat-form-field>
 
       <button matButton="filled" class="create-game-button" type="submit"
-              [disabled]="gameForm.name().invalid()">
+              [disabled]="gameForm.name().invalid() || nameTaken()">
         Créer la partie
       </button>
+
+      @if (nameTaken()) {
+        <p class="name-taken" role="alert">Une partie en cours ou en préparation porte déjà ce nom.</p>
+      }
 
       <div class="separator"></div>
     </form>
@@ -36,12 +41,19 @@ export class CreateGameComponent {
     maxLength(path.name, 30)
   })
 
+  readonly existingNames = input<string[]>([])
+
+  protected readonly nameTaken = computed(() => {
+    const name = this.model().name
+    return name.trim() !== '' && this.existingNames().some(existing => isSameName(existing, name))
+  })
+
   readonly gameCreated = output<string>()
 
   protected createGame(event: Event): void {
     event.preventDefault()
     const name = this.model().name.trim()
-    if (name) {
+    if (name && !this.nameTaken()) {
       this.gameCreated.emit(name)
       this.model.set({ name: '' })
     }

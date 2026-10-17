@@ -14,7 +14,7 @@
  * Home page component for WTTM Flip Cards application
  * Displays welcome message with header banner and footer copyright and version
  */
-import { Component, inject } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
 import { Router } from '@angular/router'
 import { PageShellComponent } from '../../components/page-shell/page-shell.component'
 import { CreateGameComponent } from '../../components/create-game/create-game.component'
@@ -27,7 +27,7 @@ import { environment } from '../../../environments/environment'
   imports: [PageShellComponent, CreateGameComponent, GameListComponent],
   template: `
     <wttm-page-shell>
-      <wttm-create-game (gameCreated)="onGameCreated($event)" />
+      <wttm-create-game [existingNames]="existingNames()" (gameCreated)="onGameCreated($event)" />
       <wttm-game-list [games]="gamesList()" (gameJoined)="onGameJoined($event)" />
     </wttm-page-shell>
   `
@@ -43,6 +43,8 @@ export class HomeComponent {
   }
 
   protected readonly gamesList = this.gameService.games.value
+
+  protected readonly existingNames = computed(() => this.gamesList().map(game => game.name))
 
   protected async onGameCreated(name: string): Promise<void> {
     await this.router.navigate(['/new'], { queryParams: { name } })

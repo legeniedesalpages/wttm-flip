@@ -39,3 +39,8 @@
 .join-button {
     min-width: 100px;
 }
+
+.player-count {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: small;
+}
