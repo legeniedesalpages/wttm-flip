@@ -14,25 +14,19 @@
  * Home page component for WTTM Flip Cards application
  * Displays welcome message with header banner and footer copyright and version
  */
-import { Component, inject, signal } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { Router } from '@angular/router'
 import { PageShellComponent } from '../../components/page-shell/page-shell.component'
 import { CreateGameComponent } from '../../components/create-game/create-game.component'
 import { GameListComponent } from '../../components/game-list/game-list.component'
-import { JoinGameComponent, JoinRequest } from '../../components/join-game/join-game.component'
-import { GameService, JoinError } from '../../services/game.service'
-import { Game } from '../../model/game-model'
+import { GameService } from '../../services/game.service'
 import { environment } from '../../../environments/environment'
 
 @Component({
   selector: 'wttm-home',
-  imports: [PageShellComponent, CreateGameComponent, GameListComponent, JoinGameComponent],
+  imports: [PageShellComponent, CreateGameComponent, GameListComponent],
   template: `
     <wttm-page-shell>
-      @if (joining(); as game) {
-        <wttm-join-game [game]="game" [error]="joinError()"
-                        (joined)="onJoinConfirmed($event)" (cancelled)="joining.set(null)" />
-      }
       <wttm-create-game (gameCreated)="onGameCreated($event)" />
       <wttm-game-list [games]="gamesList()" (gameJoined)="onGameJoined($event)" />
     </wttm-page-shell>
@@ -49,8 +43,6 @@ export class HomeComponent {
   }
 
   protected readonly gamesList = this.gameService.games.value
-  protected readonly joining = signal<Game | null>(null)
-  protected readonly joinError = signal('')
 
   protected async onGameCreated(name: string): Promise<void> {
     await this.router.navigate(['/new'], { queryParams: { name } })
@@ -65,26 +57,6 @@ export class HomeComponent {
       await this.router.navigate(['/game', game.id])
       return
     }
-    this.joinError.set('')
-    this.joining.set(game)
-  }
-
-  protected async onJoinConfirmed(request: JoinRequest): Promise<void> {
-    const game = this.joining()
-    if (!game) {
-      return
-    }
-    try {
-      await this.gameService.joinGame(game, request.name, request.password)
-      this.joining.set(null)
-      await this.router.navigate(['/game', game.id])
-    } catch (error) {
-      if (error instanceof JoinError) {
-        this.joinError.set(error.reason === 'wrong-password' ? 'Mot de passe incorrect.' : 'La partie est complète ou déjà lancée.')
-      } else {
-        console.error('Impossible de rejoindre la partie', error)
-        this.joinError.set('Impossible de rejoindre la partie.')
-      }
-    }
+    await this.router.navigate(['/join', game.id])
   }
 }

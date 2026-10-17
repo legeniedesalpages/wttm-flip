@@ -1,0 +1,33 @@
+.details {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 21em;
+    margin: 0 auto;
+    padding-bottom: 20px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.game-name {
+    margin: 0 0 1.25rem;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.field {
+    width: 100%;
+}
+
+.error {
+    margin: 0 0 1rem;
+    color: #b3261e;
+}
+
+.join-button,
+.cancel-button {
+    width: 100%;
+}
+
+.cancel-button {
+    margin-top: 0.75rem;
+}
