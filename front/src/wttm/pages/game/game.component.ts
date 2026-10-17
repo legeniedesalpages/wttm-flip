@@ -5,6 +5,7 @@
 import { Component, computed, ElementRef, inject, input, resource, viewChild } from '@angular/core'
 import { Router, RouterLink } from '@angular/router'
 import { FirebaseService } from '../../services/firebase.service'
+import { Game } from '../../model/game-model'
 import { GameService } from '../../services/game.service'
 import { LocalGameComponent } from '../../components/local-game/local-game.component'
 import { OnlineGameComponent } from '../../components/online-game/online-game.component'
@@ -20,14 +21,14 @@ import { OnlineGameComponent } from '../../components/online-game/online-game.co
         <wttm-local-game />
       }
       @if (isHost()) {
-        <button type="button" class="stop" (click)="confirmDialog().nativeElement.showModal()">Arrêter la partie</button>
+        <button type="button" class="stop" (click)="confirmDialog().nativeElement.showModal()">Terminer la partie</button>
         <dialog #confirm class="confirm" aria-labelledby="confirm-title">
           <form method="dialog">
-            <h2 id="confirm-title">Arrêter la partie ?</h2>
-            <p>La partie sera supprimée pour tous les joueurs.</p>
+            <h2 id="confirm-title">Terminer la partie ?</h2>
+            <p>{{ game.mode === 'distributed' ? 'La partie sera terminée pour tous les joueurs.' : 'La partie sera supprimée.' }}</p>
             <div class="actions">
               <button value="cancel">Continuer à jouer</button>
-              <button type="button" class="danger" (click)="stop(game.id)">Arrêter la partie</button>
+              <button type="button" class="danger" (click)="stop(game)">Terminer la partie</button>
             </div>
           </form>
         </dialog>
@@ -60,12 +61,17 @@ export class GameComponent {
     return !!game && game.hostUid === this.firebase.uid()
   })
 
-  protected async stop(id: string): Promise<void> {
+  protected async stop(game: Game): Promise<void> {
     try {
-      await this.gameService.deleteGame(id)
-      await this.router.navigateByUrl('/')
+      if (game.mode === 'distributed') {
+        await this.gameService.finishGame(game.id)
+        await this.router.navigate(['/summary', game.id])
+      } else {
+        await this.gameService.deleteGame(game.id)
+        await this.router.navigateByUrl('/')
+      }
     } catch (error) {
-      console.error('Impossible d\'arrêter la partie', error)
+      console.error('Impossible de terminer la partie', error)
     }
   }
 }

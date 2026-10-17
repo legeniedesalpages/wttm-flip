@@ -1,13 +1,14 @@
 import { computed, effect, inject, Service, signal, untracked } from '@angular/core'
-import { onValue, ref, set, update } from 'firebase/database'
+import { increment, onValue, ref, serverTimestamp, update } from 'firebase/database'
 import { Game, Player } from '../model/game-model'
 import { DeckService, DeckState } from './deck.service'
 import { FirebaseService } from './firebase.service'
-import { GameRecord, toGame } from './game.service'
+import { GameRecord, StatsRecord, toGame } from './game.service'
 
 interface PlayerRecord {
   name?: string
   ready?: boolean
+  readyAt?: number
 }
 
 type PilesRecord = Record<string, number[] | Record<string, number>>
@@ -30,6 +31,7 @@ export class OnlineGameService {
 
   readonly game = signal<Game | null>(null)
   readonly loaded = signal(false)
+  private readonly stats = signal<StatsRecord | null>(null)
   readonly players = signal<Player[]>([])
   readonly error = signal<string | null>(null)
 
@@ -61,12 +63,13 @@ export class OnlineGameService {
     this.gameId = gameId
     this.game.set(null)
     this.loaded.set(false)
+    this.stats.set(null)
     this.players.set([])
     this.error.set(null)
     this.busy = false
     this.deck.restore({ piles: [], discards: [] })
 
-    const onError = () => this.error.set('La partie est terminée ou vous n\'en faites pas partie.')
+    const onError = () => this.error.set('Accès à la partie refusé : vous n\'en faites pas partie ou les règles Firebase ne sont pas à jour.')
     const stops: (() => void)[] = []
     void this.firebase.signIn().then(uid => {
       stops.push(
@@ -78,10 +81,13 @@ export class OnlineGameService {
           const players: Player[] = []
           snapshot.forEach(child => {
             const record = child.val() as PlayerRecord
-            players.push({ uid: child.key, name: record.name ?? '', ready: record.ready ?? false })
+            players.push({ uid: child.key, name: record.name ?? '', ready: record.ready ?? false, readyAt: record.readyAt })
           })
           this.players.set(players)
         }, onError),
+        onValue(ref(this.database, `stats/${gameId}`), snapshot => {
+          this.stats.set(snapshot.val() as StatsRecord | null)
+        }, error => console.warn('Statistiques indisponibles (règles Firebase à jour ?)', error)),
         onValue(ref(this.database, `states/${gameId}`), snapshot => {
           if (snapshot.exists()) {
             const value = snapshot.val() as DeckRecord
@@ -94,13 +100,23 @@ export class OnlineGameService {
       )
       console.debug('Connecté à la partie', gameId, 'uid', uid)
     })
-    return () => stops.forEach(stop => stop())
+    return () => {
+      stops.forEach(stop => stop())
+      // l'état d'une partie ne doit pas fuiter vers la suivante
+      this.game.set(null)
+      this.players.set([])
+      this.stats.set(null)
+    }
   }
 
   async markReady(): Promise<void> {
     const uid = this.firebase.uid()
     if (uid) {
-      await set(ref(this.database, `players/${this.gameId}/${uid}/ready`), true)
+      // Horodatage serveur : les temps des joueurs sont comparables entre eux
+      await update(ref(this.database), {
+        [`players/${this.gameId}/${uid}/ready`]: true,
+        [`players/${this.gameId}/${uid}/readyAt`]: serverTimestamp()
+      })
     }
   }
 
@@ -114,7 +130,9 @@ export class OnlineGameService {
       this.deck.initGame()
       await update(ref(this.database), {
         [`states/${this.gameId}`]: this.deck.state(),
-        [`games/${this.gameId}/status`]: 'playing'
+        [`games/${this.gameId}/status`]: 'playing',
+        [`stats/${this.gameId}/startedAt`]: serverTimestamp(),
+        [`stats/${this.gameId}/roundStartedAt`]: null
       })
     } finally {
       this.busy = false
@@ -128,10 +146,29 @@ export class OnlineGameService {
     }
     this.busy = true
     try {
+      const shuffling = this.deck.allDrawn()
+      const roundStartedAt = this.stats()?.roundStartedAt
+      const players = this.players()
       this.deck.flip()
       const updates: Record<string, unknown> = { [`states/${this.gameId}`]: this.deck.state() }
-      for (const player of this.players()) {
+      for (const player of players) {
         updates[`players/${this.gameId}/${player.uid}/ready`] = false
+      }
+      if (shuffling) {
+        updates[`stats/${this.gameId}/shuffles`] = increment(1)
+        updates[`stats/${this.gameId}/roundStartedAt`] = null
+      } else {
+        updates[`stats/${this.gameId}/flips`] = increment(1)
+        updates[`stats/${this.gameId}/roundStartedAt`] = serverTimestamp()
+        // temps de chaque joueur entre l'affichage des cartes et son clic (le tour suivant un mélange n'est pas chronométré)
+        if (roundStartedAt) {
+          for (const player of players) {
+            if (player.readyAt) {
+              updates[`stats/${this.gameId}/times/${player.uid}/ms`] = increment(Math.max(0, player.readyAt - roundStartedAt))
+              updates[`stats/${this.gameId}/times/${player.uid}/count`] = increment(1)
+            }
+          }
+        }
       }
       await update(ref(this.database), updates)
     } finally {

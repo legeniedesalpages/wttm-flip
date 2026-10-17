@@ -2,7 +2,7 @@
  * Mode distribué : l'hôte pilote la partie, les cartes sont retournées quand tous les joueurs ont joué
  */
 import { Component, computed, effect, inject, input } from '@angular/core'
-import { RouterLink } from '@angular/router'
+import { Router, RouterLink } from '@angular/router'
 import { DeckService } from '../../services/deck.service'
 import { OnlineGameService } from '../../services/online-game.service'
 import { DelayedButtonComponent } from '../delayed-button/delayed-button.component'
@@ -23,7 +23,9 @@ import { TableComponent } from '../table/table.component'
         <a routerLink="/">Retour à l'accueil</a>
       </section>
     } @else if (online.game(); as game) {
-      @if (game.status === 'waiting') {
+      @if (game.status === 'finished') {
+        <section class="message"><p>La partie est terminée…</p></section>
+      } @else if (game.status === 'waiting') {
         <section class="message">
           <h1>{{ game.name }}</h1>
           <p>En attente des joueurs : {{ online.players().length }} / {{ game.maxPlayers }}</p>
@@ -41,7 +43,7 @@ import { TableComponent } from '../table/table.component'
           }
         </section>
       } @else {
-        <wttm-table [deckTops]="deckService.deckTops()" [discardTops]="deckService.discardTops()">
+        <wttm-table [deckTops]="deckService.deckTops()" [remaining]="deckService.remaining()" [discardTops]="deckService.discardTops()">
           @if (deckService.allDrawn()) {
             @if (online.isHost()) {
               <wttm-delayed-button [lockKey]="lockKey()" (pressed)="online.flip()">Mélanger</wttm-delayed-button>
@@ -49,7 +51,7 @@ import { TableComponent } from '../table/table.component'
               <p>En attente du mélange par l'hôte…</p>
             }
           } @else {
-            <wttm-delayed-button [lockKey]="lockKey()" [disabled]="online.me()?.ready ?? false" (pressed)="online.markReady()">J'ai joué</wttm-delayed-button>
+            <wttm-delayed-button [lockKey]="lockKey()" [disabled]="online.me()?.ready ?? false" (pressed)="online.markReady()">{{ readyLabel() }}</wttm-delayed-button>
             <p>{{ status() }}</p>
           }
         </wttm-table>
@@ -61,10 +63,15 @@ import { TableComponent } from '../table/table.component'
 export class OnlineGameComponent {
   readonly gameId = input.required<string>()
 
+  private readonly router = inject(Router)
   protected readonly online = inject(OnlineGameService)
   protected readonly deckService = inject(DeckService)
 
   protected readonly lockKey = computed(() => this.deckService.remaining().join())
+
+  protected readonly firstRound = computed(() => this.deckService.discardTops().every(card => !card))
+
+  protected readonly readyLabel = computed(() => this.firstRound() ? 'Je suis prêt' : "J'ai joué")
 
   protected readonly status = computed(() => {
     const waiting = this.online.waitingFor()
@@ -72,6 +79,12 @@ export class OnlineGameComponent {
   })
 
   constructor() {
+    effect(() => {
+      const game = this.online.game()
+      if (game?.status === 'finished' && game.id === this.gameId()) {
+        void this.router.navigate(['/summary', this.gameId()])
+      }
+    })
     effect(onCleanup => {
       const stop = this.online.connect(this.gameId())
       onCleanup(stop)

@@ -1,5 +1,5 @@
 export type GameMode = 'common' | 'distributed'
-export type GameStatus = 'waiting' | 'playing'
+export type GameStatus = 'waiting' | 'playing' | 'finished'
 
 export interface Game {
   id: string
@@ -17,6 +17,7 @@ export interface Player {
   uid: string
   name: string
   ready: boolean
+  readyAt?: number
 }
 
 export interface NewGame {
@@ -24,4 +25,20 @@ export interface NewGame {
   mode: GameMode
   maxPlayers: number
   password: string
+}
+
+export interface PlayerRanking {
+  uid: string
+  name: string
+  totalMs: number
+  rounds: number
+  averageMs: number | null
+}
+
+export interface GameSummary {
+  name: string
+  durationMs: number | null
+  flips: number
+  shuffles: number
+  ranking: PlayerRanking[]
 }

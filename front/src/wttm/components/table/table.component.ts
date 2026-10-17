@@ -11,11 +11,14 @@ import { CardComponent } from '../card/card.component'
   template: `
     <main class="table">
       @for (card of deckTops(); track $index) {
-        @if (card) {
-          <wttm-card class="slot" [card]="card" [side]="false" />
-        } @else {
-          <div class="slot empty"></div>
-        }
+        <div class="deck">
+          @if (card) {
+            <wttm-card class="slot" [card]="card" [side]="false" />
+          } @else {
+            <div class="slot empty"></div>
+          }
+          <span class="remaining" [attr.aria-label]="remainingLabel($index)">{{ remaining()[$index] ?? 0 }}</span>
+        </div>
       }
       <div class="controls">
         <ng-content />
@@ -34,4 +37,10 @@ import { CardComponent } from '../card/card.component'
 export class TableComponent {
   readonly deckTops = input.required<(CardModel | undefined)[]>()
   readonly discardTops = input.required<(CardModel | undefined)[]>()
+  readonly remaining = input<number[]>([])
+
+  protected remainingLabel(index: number): string {
+    const count = this.remaining()[index] ?? 0
+    return `${count} carte${count > 1 ? 's' : ''} restante${count > 1 ? 's' : ''}`
+  }
 }

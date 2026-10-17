@@ -1,6 +1,6 @@
 import { inject, resource, Service, signal, type ResourceStreamItem } from '@angular/core'
 import { get, onValue, push, ref, runTransaction, serverTimestamp, set, update } from 'firebase/database'
-import { Game, GameMode, GameStatus, NewGame } from '../model/game-model'
+import { Game, GameMode, GameStatus, GameSummary, NewGame, PlayerRanking } from '../model/game-model'
 import { FirebaseService } from './firebase.service'
 
 export interface GameRecord {
@@ -12,6 +12,15 @@ export interface GameRecord {
   playerCount?: number
   status?: GameStatus
   hasPassword?: boolean
+}
+
+export interface StatsRecord {
+  startedAt?: number
+  endedAt?: number
+  roundStartedAt?: number | null
+  flips?: number
+  shuffles?: number
+  times?: Record<string, { ms?: number, count?: number }>
 }
 
 export function toGame(id: string, record: GameRecord): Game {
@@ -50,7 +59,7 @@ export class GameService {
         snapshot.forEach(child => {
           games.push(toGame(child.key, child.val() as GameRecord))
         })
-        result.set({ value: games.sort((a, b) => b.createdAt - a.createdAt) })
+        result.set({ value: games.filter(game => game.status !== 'finished').sort((a, b) => b.createdAt - a.createdAt) })
       }, error => result.set({ error }))
       abortSignal.addEventListener('abort', unsubscribe)
       return result
@@ -98,8 +107,56 @@ export class GameService {
       [`games/${id}`]: null,
       [`secrets/${id}`]: null,
       [`players/${id}`]: null,
-      [`states/${id}`]: null
+      [`states/${id}`]: null,
+      [`stats/${id}`]: null
     })
+  }
+
+  /** Marque la partie distribuée comme terminée : les données sont conservées pour le résumé */
+  async finishGame(id: string): Promise<void> {
+    await update(ref(this.database), {
+      [`games/${id}/status`]: 'finished',
+      [`stats/${id}/endedAt`]: serverTimestamp()
+    })
+  }
+
+  async getSummary(id: string): Promise<GameSummary | null> {
+    await this.firebase.signIn()
+    try {
+      const [game, players, stats] = await Promise.all([
+        get(ref(this.database, `games/${id}`)),
+        get(ref(this.database, `players/${id}`)),
+        get(ref(this.database, `stats/${id}`))
+      ])
+      if (!game.exists()) {
+        return null
+      }
+      const record = stats.val() as StatsRecord | null
+      const ranking: PlayerRanking[] = []
+      players.forEach(child => {
+        const time = record?.times?.[child.key]
+        const rounds = time?.count ?? 0
+        const totalMs = time?.ms ?? 0
+        ranking.push({
+          uid: child.key,
+          name: (child.val() as { name?: string }).name ?? '',
+          totalMs,
+          rounds,
+          averageMs: rounds > 0 ? totalMs / rounds : null
+        })
+      })
+      // du plus lent au plus rapide, les joueurs sans temps à la fin
+      ranking.sort((a, b) => (b.averageMs ?? -1) - (a.averageMs ?? -1))
+      return {
+        name: (game.val() as GameRecord).name ?? '',
+        durationMs: record?.startedAt && record.endedAt ? record.endedAt - record.startedAt : null,
+        flips: record?.flips ?? 0,
+        shuffles: record?.shuffles ?? 0,
+        ranking
+      }
+    } catch {
+      return null
+    }
   }
 
   async isMember(gameId: string): Promise<boolean> {

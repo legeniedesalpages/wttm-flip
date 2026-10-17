@@ -10,7 +10,7 @@ import { TableComponent } from '../table/table.component'
   selector: 'wttm-local-game',
   imports: [TableComponent, DelayedButtonComponent],
   template: `
-    <wttm-table [deckTops]="deckService.deckTops()" [discardTops]="deckService.discardTops()">
+    <wttm-table [deckTops]="deckService.deckTops()" [remaining]="deckService.remaining()" [discardTops]="deckService.discardTops()">
       <wttm-delayed-button [lockKey]="deckService.remaining().join()" (pressed)="deckService.flip()">
         {{ deckService.allDrawn() ? 'Mélanger' : 'Retourner' }}
       </wttm-delayed-button>

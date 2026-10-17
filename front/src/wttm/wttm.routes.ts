@@ -30,6 +30,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/game/game.component').then(m => m.GameComponent)
   },
   {
+    path: 'summary/:id',
+    loadComponent: () => import('./pages/summary/summary.component').then(m => m.SummaryComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }
