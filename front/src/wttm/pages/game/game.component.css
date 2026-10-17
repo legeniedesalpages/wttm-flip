@@ -5,19 +5,48 @@
 
 .table {
     --gap: 2vmin;
-    display: flex;
+    --button-height: 3.5rem;
+    /* Largeur limitée par l'écran (3 colonnes) ou par la hauteur (2 rangées de cartes + bouton) : le ratio 300/456 reste intact */
+    --card-width: min(
+        calc((100vw - 4 * var(--gap)) / 3),
+        calc((100dvh - 4 * var(--gap) - var(--button-height)) / 2 * 300 / 456)
+    );
+    display: grid;
+    grid-template-columns: repeat(3, var(--card-width));
+    grid-template-rows: auto var(--button-height) auto;
     justify-content: center;
-    align-items: center;
+    align-content: center;
     gap: var(--gap);
     box-sizing: border-box;
     min-height: 100dvh;
     padding: var(--gap);
 }
 
-/* La largeur est limitée soit par la largeur de l'écran, soit par la hauteur : le ratio 300/456 reste intact */
-.deck {
-    width: min(
-        calc((100vw - 4 * var(--gap)) / 3),
-        calc((100dvh - 2 * var(--gap)) * 300 / 456)
-    );
+.slot {
+    width: var(--card-width);
+}
+
+.empty {
+    aspect-ratio: 300 / 456;
+    box-sizing: border-box;
+    border: 2px dashed #555;
+    border-radius: 4%;
+}
+
+.flip {
+    grid-column: 1 / -1;
+    justify-self: center;
+    padding: 0 2.5rem;
+    font: inherit;
+    font-size: 1.25rem;
+    color: #fff;
+    background-color: #2a1e28;
+    border: 2px solid #eee;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.flip:hover,
+.flip:focus-visible {
+    background-color: #4a3447;
 }

@@ -1,8 +1,8 @@
 /**
  * Game page for WTTM Flip Cards application
- * Displays the top card of each of the three decks
+ * Three decks: face-down piles on top, flipped cards below
  */
-import { Component, inject } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
 import { CardComponent } from '../../components/card/card.component'
 import { DeckService } from '../../services/deck.service'
 
@@ -11,8 +11,22 @@ import { DeckService } from '../../services/deck.service'
   imports: [CardComponent],
   template: `
     <main class="table">
-      @for (card of topCards(); track card.id) {
-        <wttm-card class="deck" [card]="card" />
+      @for (card of deckTops(); track $index) {
+        @if (card) {
+          <wttm-card class="slot" [card]="card" [side]="false" />
+        } @else {
+          <div class="slot empty"></div>
+        }
+      }
+      <button type="button" class="flip" (click)="flip()">
+        {{ allFlipped() ? 'Mélanger' : 'Retourner' }}
+      </button>
+      @for (card of discardTops(); track $index) {
+        @if (card) {
+          <wttm-card class="slot" [card]="card" />
+        } @else {
+          <div class="slot empty"></div>
+        }
       }
     </main>
   `,
@@ -21,9 +35,15 @@ import { DeckService } from '../../services/deck.service'
 export class GameComponent {
   private readonly deckService = inject(DeckService)
 
-  protected readonly topCards = this.deckService.topCards
+  protected readonly deckTops = this.deckService.deckTops
+  protected readonly discardTops = this.deckService.discardTops
+  protected readonly allFlipped = computed(() => this.deckService.remaining().every(count => count === 0))
 
   constructor() {
     this.deckService.initGame()
+  }
+
+  protected flip() {
+    this.deckService.flip()
   }
 }

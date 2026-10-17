@@ -21,10 +21,13 @@ export class DeckService {
 
     private readonly cardTemplateList: CardModel[] = []
 
-    private readonly deck = signal<CardModel[][]>([])
+    // Cartes restantes (face cachée) et cartes déjà retournées, un tableau par paquet
+    private readonly piles = signal<CardModel[][]>([])
+    private readonly discards = signal<CardModel[][]>([])
 
-    readonly topCards = computed(() => this.deck().map(pile => pile[0]).filter(card => card !== undefined))
-    private round: number = 0
+    readonly deckTops = computed(() => this.piles().map(pile => pile.at(0)))
+    readonly discardTops = computed(() => this.discards().map(pile => pile.at(-1)))
+    readonly remaining = computed(() => this.piles().map(pile => pile.length))
 
     constructor() {
         this.createCards()
@@ -32,31 +35,32 @@ export class DeckService {
     }
 
     public initGame() {
-        const clonedCardList = [...this.cardTemplateList]
-        // on melange [NUMBER_OF_SHUFFLE] fois le paquet (pour que ce soit bien melangé)
-        for (let i = 0; i < DeckService.NUMBER_OF_SHUFFLE; i++) {
-            clonedCardList.sort(() => Math.random() - 0.5);
-        }
+        const clonedCardList = this.shuffle(this.cardTemplateList)
 
         // on reparti dans les [NUMBER_OF_DECK] paquets les cartes
-        const piles: CardModel[][] = []
-        for (let i = 0; i < DeckService.NUMBER_OF_DECK; i++) {
-            piles[i] = clonedCardList.splice(0, this.cardTemplateList.length / DeckService.NUMBER_OF_DECK)
-        }
-        this.deck.set(piles)
-
-        this.round = 0
-        console.debug("Deck: ", this.deck())
+        const size = this.cardTemplateList.length / DeckService.NUMBER_OF_DECK
+        this.piles.set(Array.from({ length: DeckService.NUMBER_OF_DECK }, (_, i) => clonedCardList.slice(i * size, (i + 1) * size)))
+        this.discards.set(Array.from({ length: DeckService.NUMBER_OF_DECK }, () => []))
     }
 
-    private shuffle() {
-        this.deck.update(piles => piles.map(pile => {
-            const shuffled = [...pile]
-            for (let j = 0; j < DeckService.NUMBER_OF_SHUFFLE; j++) {
-                shuffled.sort(() => Math.random() - 0.5)
-            }
-            return shuffled
-        }))
+    /** Retourne la carte du dessus de chaque paquet ; si les paquets sont vides, chacun est remélangé */
+    public flip() {
+        if (this.piles().every(pile => pile.length === 0)) {
+            this.piles.set(this.discards().map(discard => this.shuffle(discard)))
+            this.discards.set(this.piles().map(() => []))
+            return
+        }
+        const flipped = this.piles().map(pile => pile.at(0))
+        this.discards.update(discards => discards.map((discard, i) => flipped[i] ? [...discard, flipped[i]] : discard))
+        this.piles.update(piles => piles.map(pile => pile.slice(1)))
+    }
+
+    private shuffle(cards: readonly CardModel[]): CardModel[] {
+        const shuffled = [...cards]
+        for (let j = 0; j < DeckService.NUMBER_OF_SHUFFLE; j++) {
+            shuffled.sort(() => Math.random() - 0.5)
+        }
+        return shuffled
     }
 
     private createCards() {
