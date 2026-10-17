@@ -14,7 +14,7 @@
  * Home page component for WTTM Flip Cards application
  * Displays welcome message with header banner and footer copyright and version
  */
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { NgOptimizedImage } from '@angular/common'
 import { LayoutComponent } from '../../layout/layout.component'
 import { CreateGameComponent } from '../../components/create-game/create-game.component'
@@ -26,8 +26,7 @@ import { environment } from '../../../environments/environment'
   selector: 'wttm-home',
   imports: [LayoutComponent, CreateGameComponent, GameListComponent, NgOptimizedImage],
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrl: './home.component.css'
 })
 export class HomeComponent {
   
@@ -38,7 +37,7 @@ export class HomeComponent {
     console.debug('Démarrage application, firebase projectId:', this.env.firebase.projectId)
   }
 
-  protected readonly gamesList = this.gameService.games
+  protected readonly gamesList = this.gameService.games.value
   
   protected async onGameCreated(name: string): Promise<void> {
     try {

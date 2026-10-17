@@ -1,45 +1,49 @@
 /**
-    * @description      : 
-    * @author           : renau
-    * @group            : 
-    * @created          : 24/07/2025 - 12:14:17
-    * 
-    * MODIFICATION LOG
-    * - Version         : 1.0.0
-    * - Date            : 24/07/2025
-    * - Author          : renau
-    * - Modification    : 
-**/
-/**
  * Create Game component for WTTM Flip Cards application
- * Handles player name input and game creation
+ * Handles game name input and game creation
  */
-import { Component, ChangeDetectionStrategy, signal, output } from '@angular/core'
+import { Component, output, signal } from '@angular/core'
+import { form, FormField, required, maxLength } from '@angular/forms/signals'
 import { MatInputModule } from '@angular/material/input'
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatButtonModule } from '@angular/material/button'
-import { FormsModule } from '@angular/forms'
 
 @Component({
   selector: 'wttm-create-game',
-  imports: [MatInputModule, MatFormFieldModule, MatButtonModule, FormsModule],
-  templateUrl: './create-game.component.html',
-  styleUrl: './create-game.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  imports: [FormField, MatInputModule, MatFormFieldModule, MatButtonModule],
+  template: `
+    <form class="input-container" (submit)="createGame($event)">
+      <mat-form-field appearance="outline" class="name-field">
+        <mat-label>Entrez votre nom pour créer une partie...</mat-label>
+        <input matInput [formField]="gameForm.name" />
+      </mat-form-field>
+
+      <button matButton="filled" class="create-game-button" type="submit"
+              [disabled]="gameForm.name().invalid()">
+        Créer la partie
+      </button>
+
+      <div class="separator"></div>
+    </form>
+  `,
+  styleUrl: './create-game.component.css'
 })
 export class CreateGameComponent {
-  protected readonly playerName = signal('')
-  protected readonly gameCreated = output<string>()
-  
-  protected onNameChange(name: string): void {
-    this.playerName.set(name)
-  }
+  private readonly model = signal({ name: '' })
 
-  protected createGame(): void {
-    const name = this.playerName()?.trim()
+  protected readonly gameForm = form(this.model, path => {
+    required(path.name)
+    maxLength(path.name, 50)
+  })
+
+  readonly gameCreated = output<string>()
+
+  protected createGame(event: Event): void {
+    event.preventDefault()
+    const name = this.model().name.trim()
     if (name) {
-      console.debug('Création de la partie pour:', name)
       this.gameCreated.emit(name)
+      this.model.set({ name: '' })
     }
   }
 }

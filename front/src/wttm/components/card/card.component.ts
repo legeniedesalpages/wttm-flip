@@ -10,14 +10,19 @@
     * - Author          : renau
     * - Modification    : 
 **/
-import { Component, ChangeDetectionStrategy, computed, input } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { CardModel, CardType } from '../../model/card-model'
 
 @Component({
   selector: 'wttm-card',
-  templateUrl: './card.component.html',
-  styleUrl: './card.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  template: `
+    <div class="card-image" [style.background-image]="imageUrl()">
+      @if (side()) {
+        <span class="text">{{ card().displayNumber }}</span>
+      }
+    </div>
+  `,
+  styleUrl: './card.component.css'
 })
 export class CardComponent {
 

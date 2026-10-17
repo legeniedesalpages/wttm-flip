@@ -10,10 +10,10 @@
     * - Author          : renau
     * - Modification    : 
 **/
-import { Injectable } from '@angular/core';
+import { Service } from '@angular/core';
 import { CardLogo, CardModel, CardType } from '../model/card-model';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class DeckService {
 
     private static readonly NUMBER_OF_DECK: number = 3

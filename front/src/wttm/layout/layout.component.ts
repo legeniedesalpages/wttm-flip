@@ -14,7 +14,7 @@
  * Layout component for WTTM Flip Cards application
  * Provides flexible header and footer areas with sticky positioning
  */
-import { Component, input, ChangeDetectionStrategy } from '@angular/core'
+import { Component, input } from '@angular/core'
 
 @Component({
   selector: 'wttm-layout',
@@ -67,8 +67,7 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core'
       border-top: var(--footer-border);
       box-shadow: var(--footer-shadow);
     }
-  `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  `
 })
 export class LayoutComponent {
   /**

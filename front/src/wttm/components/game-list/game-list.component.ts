@@ -1,38 +1,35 @@
 /**
-    * @description      : 
-    * @author           : renau
-    * @group            : 
-    * @created          : 24/07/2025 - 12:33:05
-    * 
-    * MODIFICATION LOG
-    * - Version         : 1.0.0
-    * - Date            : 24/07/2025
-    * - Author          : renau
-    * - Modification    : 
-**/
-/**
  * Game List component for WTTM Flip Cards application
  * Displays available games list with join functionality
  */
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core'
+import { Component, input, output } from '@angular/core'
 import { MatButtonModule } from '@angular/material/button'
 import { Game } from '../../model/game-model'
 
 @Component({
   selector: 'wttm-game-list',
   imports: [MatButtonModule],
-  templateUrl: './game-list.component.html',
-  styleUrl: './game-list.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  template: `
+    <ul class="games-list">
+      @for (game of games(); track game.id) {
+        <li class="game-item">
+          <div class="game-info">
+            <div class="game-creator">{{ game.name }}</div>
+          </div>
+
+          <button matButton="outlined" class="join-button" (click)="gameJoined.emit(game.id)">
+            Rejoindre
+          </button>
+        </li>
+      } @empty {
+        <li class="game-item">Aucune partie en cours</li>
+      }
+    </ul>
+  `,
+  styleUrl: './game-list.component.css'
 })
 export class GameListComponent {
   readonly games = input.required<Game[]>()
-  
+
   readonly gameJoined = output<string>()
-  
-  protected joinGame(gameId: string): void {
-    console.debug('Rejoindre la partie:', gameId)
-    this.gameJoined.emit(gameId)
-    // TODO: Implémenter la logique de rejoindre une partie
-  }
 }
