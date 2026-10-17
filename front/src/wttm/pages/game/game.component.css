@@ -1,0 +1,23 @@
+:host {
+    display: block;
+    background-color: #000;
+}
+
+.table {
+    --gap: 2vmin;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap);
+    box-sizing: border-box;
+    min-height: 100dvh;
+    padding: var(--gap);
+}
+
+/* La largeur est limitée soit par la largeur de l'écran, soit par la hauteur : le ratio 300/456 reste intact */
+.deck {
+    width: min(
+        calc((100vw - 4 * var(--gap)) / 3),
+        calc((100dvh - 2 * var(--gap)) * 300 / 456)
+    );
+}

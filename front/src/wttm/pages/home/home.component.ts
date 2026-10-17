@@ -15,6 +15,7 @@
  * Displays welcome message with header banner and footer copyright and version
  */
 import { Component, inject } from '@angular/core'
+import { Router } from '@angular/router'
 import { NgOptimizedImage } from '@angular/common'
 import { LayoutComponent } from '../../layout/layout.component'
 import { CreateGameComponent } from '../../components/create-game/create-game.component'
@@ -32,6 +33,7 @@ export class HomeComponent {
   
   protected readonly env = environment
   private readonly gameService = inject(GameService)
+  private readonly router = inject(Router)
 
   constructor() {
     console.debug('Démarrage application, firebase projectId:', this.env.firebase.projectId)
@@ -43,6 +45,9 @@ export class HomeComponent {
     try {
       const gameId = await this.gameService.createGame(name)
       console.debug('Partie enregistrée:', gameId, name)
+      if (gameId) {
+        await this.router.navigate(['/game', gameId])
+      }
     } catch (error) {
       console.error('Impossible d\'enregistrer la partie', error)
     }

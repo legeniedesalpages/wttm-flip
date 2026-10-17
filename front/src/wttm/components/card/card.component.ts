@@ -12,6 +12,7 @@
 **/
 import { Component, computed, input } from '@angular/core'
 import { CardModel, CardType } from '../../model/card-model'
+import { environment } from '../../../environments/environment'
 
 @Component({
   selector: 'wttm-card',
@@ -55,6 +56,6 @@ export class CardComponent {
       default:
         throw Error('Invalid card type')
     }
-    return "assets/images/" + image + (side ? '_recto' : '') + ".png"
+    return environment.assetsPrefix + "/assets/images/cards/" + image + (side ? '_recto' : '') + ".png"
   }
 }

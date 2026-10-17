@@ -10,7 +10,7 @@
     * - Author          : renau
     * - Modification    : 
 **/
-import { Service } from '@angular/core';
+import { computed, Service, signal } from '@angular/core';
 import { CardLogo, CardModel, CardType } from '../model/card-model';
 
 @Service()
@@ -21,7 +21,9 @@ export class DeckService {
 
     private readonly cardTemplateList: CardModel[] = []
 
-    private deck: CardModel[][] = []
+    private readonly deck = signal<CardModel[][]>([])
+
+    readonly topCards = computed(() => this.deck().map(pile => pile[0]).filter(card => card !== undefined))
     private round: number = 0
 
     constructor() {
@@ -37,20 +39,24 @@ export class DeckService {
         }
 
         // on reparti dans les [NUMBER_OF_DECK] paquets les cartes
+        const piles: CardModel[][] = []
         for (let i = 0; i < DeckService.NUMBER_OF_DECK; i++) {
-            this.deck[i] = clonedCardList.splice(0, this.cardTemplateList.length / DeckService.NUMBER_OF_DECK)
+            piles[i] = clonedCardList.splice(0, this.cardTemplateList.length / DeckService.NUMBER_OF_DECK)
         }
+        this.deck.set(piles)
 
         this.round = 0
-        console.debug("Deck: ", this.deck)
+        console.debug("Deck: ", this.deck())
     }
 
     private shuffle() {
-        for (let i = 0; i < DeckService.NUMBER_OF_DECK; i++) {
+        this.deck.update(piles => piles.map(pile => {
+            const shuffled = [...pile]
             for (let j = 0; j < DeckService.NUMBER_OF_SHUFFLE; j++) {
-                this.deck[i].sort(() => Math.random() - 0.5);
+                shuffled.sort(() => Math.random() - 0.5)
             }
-        }
+            return shuffled
+        }))
     }
 
     private createCards() {

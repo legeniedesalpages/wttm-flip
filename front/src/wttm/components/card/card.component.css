@@ -1,3 +1,9 @@
+:host {
+    display: block;
+    aspect-ratio: 300 / 456;
+    container-type: inline-size;
+}
+
 .card-image {
     display: grid;
     background-position: center;
@@ -10,8 +16,13 @@
 
 .text {
     user-select: none;
-    font-family: 'NCAA-Army-2015';
+    font-family: 'NCAA-Army-2015', sans-serif;
     display: block;
-    padding-top:4vh;
-    font-size: 16vw;
+    text-align: center;
+    color: #000;
+    padding-top: 24cqw;
+    font-size: 50cqw;
+    opacity: 0.7;
+    -webkit-text-stroke: 0.04em #eee;
+    paint-order: stroke fill;
 }
