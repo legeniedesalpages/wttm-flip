@@ -15,6 +15,13 @@ import { Game } from '../../model/game-model'
         <li class="game-item">
           <div class="game-info">
             <div class="game-creator">{{ game.name }}</div>
+            @if (game.mode === 'distributed') {
+              <div class="game-details">
+                Distribuée · {{ game.playerCount }}/{{ game.maxPlayers }} joueurs
+                @if (game.hasPassword) { · 🔒 }
+                @if (game.status === 'playing') { · en cours }
+              </div>
+            }
           </div>
 
           <button matButton="outlined" class="join-button" (click)="gameJoined.emit(game.id)">

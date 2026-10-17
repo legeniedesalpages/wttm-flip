@@ -1,0 +1,67 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "games": {
+      ".read": true,
+      "$gid": {
+        ".write": "auth != null && ((!data.exists() && newData.child('hostUid').val() === auth.uid) || (data.exists() && !newData.exists() && data.child('hostUid').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['name', 'createdAt', 'mode', 'hostUid', 'maxPlayers', 'playerCount', 'status', 'hasPassword'])",
+        "name": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50" },
+        "createdAt": { ".validate": "newData.val() === now" },
+        "mode": { ".validate": "newData.val() === 'common' || newData.val() === 'distributed'" },
+        "hostUid": { ".validate": "newData.isString()" },
+        "maxPlayers": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 6" },
+        "playerCount": {
+          ".write": "auth != null && data.exists() && newData.val() === data.val() + 1 && newData.val() <= data.parent().child('maxPlayers').val() && data.parent().child('status').val() === 'waiting'",
+          ".validate": "newData.isNumber()"
+        },
+        "status": {
+          ".write": "auth != null && data.exists() && data.parent().child('hostUid').val() === auth.uid",
+          ".validate": "newData.val() === 'waiting' || newData.val() === 'playing'"
+        },
+        "hasPassword": { ".validate": "newData.isBoolean()" },
+        "$other": { ".validate": false }
+      }
+    },
+    "secrets": {
+      "$gid": {
+        ".write": "auth != null && !newData.exists() && root.child('games/' + $gid + '/hostUid').val() === auth.uid",
+        "hash": {
+          ".write": "auth != null && !data.exists() && root.child('games/' + $gid + '/hostUid').val() === auth.uid",
+          ".validate": "newData.isString() && newData.val().length <= 128"
+        },
+        "proofs": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && newData.val() === root.child('secrets/' + $gid + '/hash').val()",
+            ".validate": "newData.isString()"
+          }
+        }
+      }
+    },
+    "players": {
+      "$gid": {
+        ".read": "auth != null && root.child('players/' + $gid + '/' + auth.uid).exists()",
+        ".write": "auth != null && !newData.exists() && root.child('games/' + $gid + '/hostUid').val() === auth.uid",
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('games/' + $gid).exists() && (root.child('games/' + $gid + '/hostUid').val() === auth.uid || !root.child('secrets/' + $gid + '/hash').exists() || root.child('secrets/' + $gid + '/proofs/' + auth.uid).val() === root.child('secrets/' + $gid + '/hash').val())",
+          ".validate": "newData.hasChildren(['name', 'joinedAt', 'ready'])",
+          "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 30" },
+          "joinedAt": { ".validate": "newData.val() === now" },
+          "ready": {
+            ".write": "auth != null && data.exists() && (auth.uid === $uid || root.child('games/' + $gid + '/hostUid').val() === auth.uid) && root.child('games/' + $gid + '/status').val() === 'playing'",
+            ".validate": "newData.isBoolean()"
+          },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+    "states": {
+      "$gid": {
+        ".read": "auth != null && root.child('players/' + $gid + '/' + auth.uid).exists()",
+        ".write": "auth != null && root.child('games/' + $gid + '/hostUid').val() === auth.uid"
+      }
+    }
+  }
+}

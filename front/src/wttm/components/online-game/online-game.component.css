@@ -1,0 +1,49 @@
+:host {
+    display: block;
+    min-height: 100dvh;
+    background-color: #000;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 100dvh;
+    padding: 1rem;
+    box-sizing: border-box;
+    color: #eee;
+    text-align: center;
+}
+
+.message h1,
+.message p,
+.message ul {
+    margin: 0;
+}
+
+.message ul {
+    padding: 0;
+    list-style: none;
+}
+
+.message a {
+    color: #eee;
+}
+
+.message button {
+    padding: 0.75rem 2rem;
+    font: inherit;
+    font-size: 1.25rem;
+    color: #fff;
+    background-color: #2a1e28;
+    border: 2px solid #eee;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+.message button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}

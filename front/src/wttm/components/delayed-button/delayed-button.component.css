@@ -1,0 +1,25 @@
+:host {
+    display: inline-block;
+}
+
+button {
+    height: 100%;
+    padding: 0 2.5rem;
+    font: inherit;
+    font-size: 1.25rem;
+    color: #fff;
+    background-color: #2a1e28;
+    border: 2px solid #eee;
+    border-radius: 0.5rem;
+    cursor: pointer;
+}
+
+button:hover:enabled,
+button:focus-visible {
+    background-color: #4a3447;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}

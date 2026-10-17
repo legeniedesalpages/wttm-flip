@@ -1,49 +1,71 @@
 /**
  * Game page for WTTM Flip Cards application
- * Three decks: face-down piles on top, flipped cards below
+ * Chooses between the common (local) and distributed (Firebase) game according to the game mode
  */
-import { Component, computed, inject } from '@angular/core'
-import { CardComponent } from '../../components/card/card.component'
-import { DeckService } from '../../services/deck.service'
+import { Component, computed, ElementRef, inject, input, resource, viewChild } from '@angular/core'
+import { Router, RouterLink } from '@angular/router'
+import { FirebaseService } from '../../services/firebase.service'
+import { GameService } from '../../services/game.service'
+import { LocalGameComponent } from '../../components/local-game/local-game.component'
+import { OnlineGameComponent } from '../../components/online-game/online-game.component'
 
 @Component({
   selector: 'wttm-game',
-  imports: [CardComponent],
+  imports: [LocalGameComponent, OnlineGameComponent, RouterLink],
   template: `
-    <main class="table">
-      @for (card of deckTops(); track $index) {
-        @if (card) {
-          <wttm-card class="slot" [card]="card" [side]="false" />
-        } @else {
-          <div class="slot empty"></div>
-        }
+    @if (game.value(); as game) {
+      @if (game.mode === 'distributed') {
+        <wttm-online-game [gameId]="game.id" />
+      } @else {
+        <wttm-local-game />
       }
-      <button type="button" class="flip" (click)="flip()">
-        {{ allFlipped() ? 'Mélanger' : 'Retourner' }}
-      </button>
-      @for (card of discardTops(); track $index) {
-        @if (card) {
-          <wttm-card class="slot" [card]="card" />
-        } @else {
-          <div class="slot empty"></div>
-        }
+      @if (isHost()) {
+        <button type="button" class="stop" (click)="confirmDialog().nativeElement.showModal()">Arrêter la partie</button>
+        <dialog #confirm class="confirm" aria-labelledby="confirm-title">
+          <form method="dialog">
+            <h2 id="confirm-title">Arrêter la partie ?</h2>
+            <p>La partie sera supprimée pour tous les joueurs.</p>
+            <div class="actions">
+              <button value="cancel">Continuer à jouer</button>
+              <button type="button" class="danger" (click)="stop(game.id)">Arrêter la partie</button>
+            </div>
+          </form>
+        </dialog>
       }
-    </main>
+    } @else if (!game.isLoading()) {
+      <section class="message">
+        <p>Cette partie est introuvable.</p>
+        <a routerLink="/">Retour à l'accueil</a>
+      </section>
+    }
   `,
   styleUrl: './game.component.css'
 })
 export class GameComponent {
-  private readonly deckService = inject(DeckService)
+  readonly id = input.required<string>()
 
-  protected readonly deckTops = this.deckService.deckTops
-  protected readonly discardTops = this.deckService.discardTops
-  protected readonly allFlipped = computed(() => this.deckService.remaining().every(count => count === 0))
+  private readonly gameService = inject(GameService)
+  private readonly firebase = inject(FirebaseService)
+  private readonly router = inject(Router)
 
-  constructor() {
-    this.deckService.initGame()
-  }
+  protected readonly confirmDialog = viewChild.required<ElementRef<HTMLDialogElement>>('confirm')
 
-  protected flip() {
-    this.deckService.flip()
+  protected readonly game = resource({
+    params: () => this.id(),
+    loader: ({ params }) => this.gameService.getGame(params)
+  })
+
+  protected readonly isHost = computed(() => {
+    const game = this.game.value()
+    return !!game && game.hostUid === this.firebase.uid()
+  })
+
+  protected async stop(id: string): Promise<void> {
+    try {
+      await this.gameService.deleteGame(id)
+      await this.router.navigateByUrl('/')
+    } catch (error) {
+      console.error('Impossible d\'arrêter la partie', error)
+    }
   }
 }

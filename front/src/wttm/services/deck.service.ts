@@ -13,6 +13,11 @@
 import { computed, Service, signal } from '@angular/core';
 import { CardLogo, CardModel, CardType } from '../model/card-model';
 
+export interface DeckState {
+    piles: number[][]
+    discards: number[][]
+}
+
 @Service()
 export class DeckService {
 
@@ -28,6 +33,13 @@ export class DeckService {
     readonly deckTops = computed(() => this.piles().map(pile => pile.at(0)))
     readonly discardTops = computed(() => this.discards().map(pile => pile.at(-1)))
     readonly remaining = computed(() => this.piles().map(pile => pile.length))
+    readonly allDrawn = computed(() => this.remaining().every(count => count === 0))
+
+    /** État sérialisable (ids de cartes) pour le partager entre joueurs */
+    readonly state = computed<DeckState>(() => ({
+        piles: this.piles().map(pile => pile.map(card => card.id)),
+        discards: this.discards().map(pile => pile.map(card => card.id))
+    }))
 
     constructor() {
         this.createCards()
@@ -43,9 +55,16 @@ export class DeckService {
         this.discards.set(Array.from({ length: DeckService.NUMBER_OF_DECK }, () => []))
     }
 
+    public restore(state: DeckState) {
+        const byId = new Map(this.cardTemplateList.map(card => [card.id, card]))
+        const toCards = (ids: number[]) => ids.map(id => byId.get(id)).filter(card => card !== undefined)
+        this.piles.set(state.piles.map(toCards))
+        this.discards.set(state.discards.map(toCards))
+    }
+
     /** Retourne la carte du dessus de chaque paquet ; si les paquets sont vides, chacun est remélangé */
     public flip() {
-        if (this.piles().every(pile => pile.length === 0)) {
+        if (this.allDrawn()) {
             this.piles.set(this.discards().map(discard => this.shuffle(discard)))
             this.discards.set(this.piles().map(() => []))
             return

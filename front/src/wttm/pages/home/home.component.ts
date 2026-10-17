@@ -14,20 +14,29 @@
  * Home page component for WTTM Flip Cards application
  * Displays welcome message with header banner and footer copyright and version
  */
-import { Component, inject } from '@angular/core'
+import { Component, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgOptimizedImage } from '@angular/common'
-import { LayoutComponent } from '../../layout/layout.component'
+import { PageShellComponent } from '../../components/page-shell/page-shell.component'
 import { CreateGameComponent } from '../../components/create-game/create-game.component'
 import { GameListComponent } from '../../components/game-list/game-list.component'
-import { GameService } from '../../services/game.service'
+import { JoinGameComponent, JoinRequest } from '../../components/join-game/join-game.component'
+import { GameService, JoinError } from '../../services/game.service'
+import { Game } from '../../model/game-model'
 import { environment } from '../../../environments/environment'
 
 @Component({
   selector: 'wttm-home',
-  imports: [LayoutComponent, CreateGameComponent, GameListComponent, NgOptimizedImage],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.css'
+  imports: [PageShellComponent, CreateGameComponent, GameListComponent, JoinGameComponent],
+  template: `
+    <wttm-page-shell>
+      @if (joining(); as game) {
+        <wttm-join-game [game]="game" [error]="joinError()"
+                        (joined)="onJoinConfirmed($event)" (cancelled)="joining.set(null)" />
+      }
+      <wttm-create-game (gameCreated)="onGameCreated($event)" />
+      <wttm-game-list [games]="gamesList()" (gameJoined)="onGameJoined($event)" />
+    </wttm-page-shell>
+  `
 })
 export class HomeComponent {
   
@@ -40,21 +49,42 @@ export class HomeComponent {
   }
 
   protected readonly gamesList = this.gameService.games.value
-  
+  protected readonly joining = signal<Game | null>(null)
+  protected readonly joinError = signal('')
+
   protected async onGameCreated(name: string): Promise<void> {
-    try {
-      const gameId = await this.gameService.createGame(name)
-      console.debug('Partie enregistrée:', gameId, name)
-      if (gameId) {
-        await this.router.navigate(['/game', gameId])
-      }
-    } catch (error) {
-      console.error('Impossible d\'enregistrer la partie', error)
-    }
+    await this.router.navigate(['/new'], { queryParams: { name } })
   }
 
-  protected onGameJoined(gameId: string): void {
-    console.debug('Rejoindre la partie:', gameId)
-    // TODO: Implémenter la logique de rejoindre une partie
+  protected async onGameJoined(gameId: string): Promise<void> {
+    const game = this.gamesList().find(candidate => candidate.id === gameId)
+    if (!game) {
+      return
+    }
+    if (game.mode === 'common' || await this.gameService.isMember(game.id)) {
+      await this.router.navigate(['/game', game.id])
+      return
+    }
+    this.joinError.set('')
+    this.joining.set(game)
+  }
+
+  protected async onJoinConfirmed(request: JoinRequest): Promise<void> {
+    const game = this.joining()
+    if (!game) {
+      return
+    }
+    try {
+      await this.gameService.joinGame(game, request.name, request.password)
+      this.joining.set(null)
+      await this.router.navigate(['/game', game.id])
+    } catch (error) {
+      if (error instanceof JoinError) {
+        this.joinError.set(error.reason === 'wrong-password' ? 'Mot de passe incorrect.' : 'La partie est complète ou déjà lancée.')
+      } else {
+        console.error('Impossible de rejoindre la partie', error)
+        this.joinError.set('Impossible de rejoindre la partie.')
+      }
+    }
   }
 }

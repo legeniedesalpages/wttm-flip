@@ -1,6 +1,6 @@
 /**
  * Create Game component for WTTM Flip Cards application
- * Handles game name input and game creation
+ * Handles game name input; the game details are asked on the next page
  */
 import { Component, output, signal } from '@angular/core'
 import { form, FormField, required, maxLength } from '@angular/forms/signals'
@@ -33,7 +33,7 @@ export class CreateGameComponent {
 
   protected readonly gameForm = form(this.model, path => {
     required(path.name)
-    maxLength(path.name, 50)
+    maxLength(path.name, 30)
   })
 
   readonly gameCreated = output<string>()

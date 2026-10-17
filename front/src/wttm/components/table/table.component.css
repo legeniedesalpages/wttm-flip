@@ -1,0 +1,50 @@
+:host {
+    display: block;
+    background-color: #000;
+}
+.table {
+    --gap: 2vmin;
+    --button-height: 3.5rem;
+    /* Largeur limitée par l'écran (3 colonnes) ou par la hauteur (2 rangées de cartes + bouton) : le ratio 300/456 reste intact */
+    --card-width: min(
+        calc((100vw - 4 * var(--gap)) / 3),
+        calc((100dvh - 4 * var(--gap) - var(--button-height)) / 2 * 300 / 456)
+    );
+    display: grid;
+    grid-template-columns: repeat(3, var(--card-width));
+    grid-template-rows: auto var(--button-height) auto;
+    justify-content: center;
+    align-content: center;
+    gap: var(--gap);
+    box-sizing: border-box;
+    min-height: 100dvh;
+    padding: var(--gap);
+}
+
+.slot {
+    width: var(--card-width);
+}
+
+.empty {
+    aspect-ratio: 300 / 456;
+    box-sizing: border-box;
+    border: 2px dashed #555;
+    border-radius: 4%;
+}
+
+.controls {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    min-width: 0;
+    color: #eee;
+}
+
+.controls p {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
